@@ -1,5 +1,6 @@
 import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui'
 import { useStore } from '@/store'
+import { Trash2 } from 'lucide-react'
 import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
 
@@ -24,7 +25,7 @@ export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
   }
 
   return (
-    <Card className="w-96 h-min">
+    <Card className="w-96 h-fit">
       <CardHeader>
         <CardTitle className="text-2xl">{title}</CardTitle>
       </CardHeader>
@@ -51,9 +52,9 @@ export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
         <AddProcess idParent={id} />
       </CardContent>
       <CardFooter className="gap-3">
-        <Button>Кнопка</Button>
-        <Button variant="destructive" onClick={handleDelete}>
-          Удалить
+        <Button>Сохранить</Button>
+        <Button variant="destructive" size="icon" onClick={handleDelete}>
+          <Trash2 />
         </Button>
       </CardFooter>
     </Card>

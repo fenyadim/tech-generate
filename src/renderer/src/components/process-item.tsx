@@ -1,6 +1,6 @@
-import { Button, Input } from '@/shared/ui'
+import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
-import { ArrowDown, ArrowUp, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
 import { useState } from 'react'
 
 interface ProcessItemProps {
@@ -8,13 +8,23 @@ interface ProcessItemProps {
   parentId: string
   pos: number
   title: string
+  description?: string
   time?: string
   length: number
 }
 
-export const ProcessItem = ({ id, parentId, pos, time = '', title, length }: ProcessItemProps) => {
+export const ProcessItem = ({
+  id,
+  parentId,
+  pos,
+  time = '',
+  title,
+  description,
+  length
+}: ProcessItemProps) => {
   const { removeProcess, moveProcessDown, moveProcessUp } = useStore()
   const [value, setValue] = useState(time)
+  const [textAreaValue, setTextAreaValue] = useState(description)
 
   const handleDeleteItem = () => {
     removeProcess(id, parentId)
@@ -29,12 +39,12 @@ export const ProcessItem = ({ id, parentId, pos, time = '', title, length }: Pro
   }
 
   return (
-    <div className="border rounded-full">
-      <div className="grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 items-center px-2">
+    <div>
+      <div className="grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg">
         <p className="text-right">{pos}.</p>
         <p className="align-middle text-center">{title}</p>
         <Input
-          className="border-none shadow-none rounded-none"
+          className="border-none shadow-none rounded-none z-10"
           placeholder="Норма времени"
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -71,6 +81,22 @@ export const ProcessItem = ({ id, parentId, pos, time = '', title, length }: Pro
           </Button>
         </div>
       </div>
+      {!textAreaValue ? (
+        <Button
+          variant="outline"
+          className="shadow-none w-full rounded-t-none"
+          onClick={() => setTextAreaValue('1.')}
+        >
+          Добавить описание
+          <ListPlus />
+        </Button>
+      ) : (
+        <Textarea
+          className="rounded-none shadow-none rounded-b-lg"
+          value={textAreaValue}
+          onChange={(e) => setTextAreaValue(e.target.value)}
+        />
+      )}
     </div>
   )
 }
