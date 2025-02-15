@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui'
-import { useState } from 'react'
+import { useStore } from '@/store'
 import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
 
@@ -9,22 +9,18 @@ interface TechCardProps {
   onDelete: (id: string) => void
 }
 
-const mockProcess = [
-  { title: 'Заготовка', time: '2.5' },
-  { title: 'Проф.шлифовка', time: '1.5' },
-  { title: 'Оптика', time: '1.5' },
-  { title: 'Эл.эрозия' }
-]
+// const mockProcess = [
+//   { title: 'Заготовка', time: '2.5' },
+//   { title: 'Проф.шлифовка', time: '1.5' },
+//   { title: 'Оптика', time: '1.5' },
+//   { title: 'Эл.эрозия' }
+// ]
 
 export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
-  const [state, setState] = useState(mockProcess)
+  const { process } = useStore()
 
   const handleDelete = () => {
     onDelete(id)
-  }
-
-  const handleAdd = (title: string) => {
-    setState((prev) => [...prev, { title }])
   }
 
   return (
@@ -38,16 +34,21 @@ export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
           <p>Процесс</p>
           <p>Норма</p>
         </div>
-        {state.map(({ title, time }, index) => (
-          <ProcessItem
-            key={index}
-            pos={index + 1}
-            title={title}
-            time={time}
-            length={state.length}
-          />
-        ))}
-        <AddProcess onAdd={handleAdd} />
+        {!!process[id] &&
+          process[id].map(({ id: processId, title, time }, index) => {
+            return (
+              <ProcessItem
+                key={processId}
+                id={processId}
+                parentId={id}
+                pos={index + 1}
+                title={title}
+                time={time}
+                length={process[id]?.length}
+              />
+            )
+          })}
+        <AddProcess idParent={id} />
       </CardContent>
       <CardFooter className="gap-3">
         <Button>Кнопка</Button>
