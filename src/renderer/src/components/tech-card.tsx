@@ -1,4 +1,6 @@
 import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui'
+import { useState } from 'react'
+import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
 
 interface TechCardProps {
@@ -15,8 +17,14 @@ const mockProcess = [
 ]
 
 export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
+  const [state, setState] = useState(mockProcess)
+
   const handleDelete = () => {
     onDelete(id)
+  }
+
+  const handleAdd = (title: string) => {
+    setState((prev) => [...prev, { title }])
   }
 
   return (
@@ -30,15 +38,16 @@ export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
           <p>Процесс</p>
           <p>Норма</p>
         </div>
-        {mockProcess.map(({ title, time }, index) => (
+        {state.map(({ title, time }, index) => (
           <ProcessItem
             key={index}
             pos={index + 1}
             title={title}
             time={time}
-            length={mockProcess.length}
+            length={state.length}
           />
         ))}
+        <AddProcess onAdd={handleAdd} />
       </CardContent>
       <CardFooter className="gap-3">
         <Button>Кнопка</Button>
