@@ -18,7 +18,9 @@ interface TechCardProps {
 // ]
 
 export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
-  const { process } = useStore()
+  const { process, onSignalSave } = useStore()
+
+  console.log(process[id])
 
   const handleDelete = () => {
     onDelete(id)
@@ -52,8 +54,8 @@ export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
         <AddProcess idParent={id} />
       </CardContent>
       <CardFooter className="gap-3">
-        <Button>Сохранить</Button>
-        <Button variant="destructive" size="icon" onClick={handleDelete}>
+        <Button onClick={onSignalSave}>Сохранить</Button>
+        <Button title="Удалить" variant="destructive" size="icon" onClick={handleDelete}>
           <Trash2 />
         </Button>
       </CardFooter>

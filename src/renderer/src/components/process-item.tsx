@@ -1,7 +1,7 @@
 import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
 import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface ProcessItemProps {
   id: string
@@ -19,23 +19,32 @@ export const ProcessItem = ({
   pos,
   time = '',
   title,
-  description,
+  description = '',
   length
 }: ProcessItemProps) => {
-  const { removeProcess, moveProcessDown, moveProcessUp } = useStore()
+  const { signal, onSignalReset, removeProcess, moveProcessDown, moveProcessUp, changeText } =
+    useStore()
   const [value, setValue] = useState(time)
   const [textAreaValue, setTextAreaValue] = useState(description)
+
+  useEffect(() => {
+    if (signal === 'save') {
+      changeText(id, value, 'time', parentId)
+      changeText(id, textAreaValue, 'description', parentId)
+      onSignalReset()
+    }
+  }, [signal])
 
   const handleDeleteItem = () => {
     removeProcess(id, parentId)
   }
 
   const handleMoveDown = () => {
-    moveProcessDown(parentId, pos - 1)
+    moveProcessDown(pos - 1, parentId)
   }
 
   const handleMoveUp = () => {
-    moveProcessUp(parentId, pos - 1)
+    moveProcessUp(pos - 1, parentId)
   }
 
   return (
@@ -52,6 +61,7 @@ export const ProcessItem = ({
         <div className="flex gap-0.5 justify-self-end">
           {pos !== 1 && (
             <Button
+              title="Переместить вверх"
               variant="outline"
               size="icon"
               className="[&_svg]:size-4 size-7"
@@ -62,6 +72,7 @@ export const ProcessItem = ({
           )}
           {pos !== length && (
             <Button
+              title="Переместить вниз"
               variant="outline"
               size="icon"
               className="[&_svg]:size-4 size-7"
@@ -72,6 +83,7 @@ export const ProcessItem = ({
             </Button>
           )}
           <Button
+            title="Удалить"
             size="icon"
             className="[&_svg]:size-4 size-7"
             variant="destructive"
@@ -92,7 +104,7 @@ export const ProcessItem = ({
         </Button>
       ) : (
         <Textarea
-          className="rounded-none shadow-none rounded-b-lg"
+          className="rounded-none shadow-none rounded-b-lg [field-sizing:content] resize-none"
           value={textAreaValue}
           onChange={(e) => setTextAreaValue(e.target.value)}
         />
