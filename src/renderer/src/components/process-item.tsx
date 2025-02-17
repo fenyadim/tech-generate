@@ -1,3 +1,4 @@
+import { cn } from '@/shared/lib/utils'
 import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
 import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
@@ -46,17 +47,26 @@ export const ProcessItem = ({
 
   return (
     <div>
-      <div className="grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg">
+      <div
+        className={cn(
+          'grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg',
+          {
+            'print:rounded-b-lg print:border-b': description === ''
+          }
+        )}
+      >
         <p className="text-right">{pos}.</p>
         <p className="align-middle text-center">{title}</p>
         <Input
-          className="border-none shadow-none rounded-none z-10"
+          className={cn('border-none shadow-none rounded-none z-10 text-center', {
+            'print:hidden': timeValue === ''
+          })}
           placeholder="Норма времени"
           value={timeValue}
           onChange={(e) => setTimeValue(e.target.value)}
           onBlur={onFocusOut('time')}
         />
-        <div className="flex gap-0.5 justify-self-end">
+        <div className="flex gap-0.5 justify-self-end print:hidden">
           {pos !== 1 && (
             <Button
               title="Переместить вверх"
@@ -94,7 +104,7 @@ export const ProcessItem = ({
       {!textAreaValue ? (
         <Button
           variant="outline"
-          className="shadow-none w-full rounded-t-none"
+          className="shadow-none w-full rounded-t-none print:hidden"
           onClick={() => setTextAreaValue('1.')}
         >
           Добавить описание

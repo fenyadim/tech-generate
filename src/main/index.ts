@@ -104,6 +104,17 @@ app.whenReady().then(() => {
     }
   })
 
+  ipcMain.handle('print', async () => {
+    const win = BrowserWindow.getFocusedWindow()
+    if (!win) return { status: 'error', message: 'Нет активного окна' }
+
+    win.webContents.print({}, (success, error) => {
+      if (!success) console.error('Ошибка печати:', error)
+    })
+
+    return { status: 'success' }
+  })
+
   createWindow()
 
   app.on('activate', function () {

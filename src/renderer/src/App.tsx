@@ -27,7 +27,7 @@ function App(): JSX.Element {
         {tech.map(({ title, id }) => (
           <TechCard id={String(id)} title={title} key={id} onDelete={handleDelete} />
         ))}
-        <Button variant="outline" className="h-auto w-96" onClick={handleClick}>
+        <Button variant="outline" className="h-auto w-96 print:hidden" onClick={handleClick}>
           <Plus />
         </Button>
       </div>

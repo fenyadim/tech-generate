@@ -1,3 +1,4 @@
+import { cn } from '@/shared/lib/utils'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
 import { Trash2 } from 'lucide-react'
@@ -31,9 +32,13 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
   }
 
   return (
-    <Card className="w-96 h-fit relative">
+    <Card
+      className={cn('w-96 h-fit relative break-inside-avoid  print:shadow-none', {
+        'print:hidden': !process[id]
+      })}
+    >
       <Button
-        className="absolute top-1 right-1"
+        className="absolute top-1 right-1 print:hidden"
         title="Удалить"
         variant="ghost"
         size="icon"
@@ -43,14 +48,17 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
       </Button>
       <CardHeader>
         <CardTitle>
-          <Label htmlFor="title">Название и номер детали</Label>
+          <Label className="print:hidden" htmlFor="title">
+            Название и номер детали
+          </Label>
           <Input
             id="title"
-            className="text-xl"
+            className="text-xl print:hidden"
             value={titleValue}
             onChange={(e) => setTitleValue(e.target.value)}
             onBlur={onChangeTitle}
           />
+          <h3 className="font-medium hidden print:block">{title}</h3>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
@@ -76,12 +84,6 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
           })}
         <AddProcess idParent={id} />
       </CardContent>
-      {/* <CardFooter className="gap-3">
-        <Button onClick={onSignalSave}>Сохранить</Button>
-        <Button title="Удалить" variant="destructive" size="icon" onClick={handleDelete}>
-          <Trash2 />
-        </Button>
-      </CardFooter> */}
     </Card>
   )
 }

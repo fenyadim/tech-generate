@@ -30,7 +30,7 @@ export const AddProcess = ({ idParent }: AddProcessProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button title="Добавить процесс" variant={'outline'} className="rounded-full">
+        <Button title="Добавить процесс" variant={'outline'} className="rounded-full print:hidden">
           <Plus />
         </Button>
       </DialogTrigger>

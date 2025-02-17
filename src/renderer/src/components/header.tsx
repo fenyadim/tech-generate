@@ -66,20 +66,37 @@ export const Header = () => {
     importProccess({})
   }
 
+  const handlePrint = async () => {
+    try {
+      const result = await window.electron.ipcRenderer.invoke('print')
+      if (result.status === 'success') {
+        console.log('Страница отправлена на печать.')
+      } else {
+        console.error('Ошибка при печати:', result.message)
+      }
+    } catch (err) {
+      console.error('Ошибка:', err)
+    }
+  }
+
   return (
-    <header className="mb-4 flex items-center justify-between p-2 border-b">
+    <header className="mb-4 flex items-center justify-between p-2 border-b print:hidden">
       <div>
         <Label htmlFor="title">Номер оснастки</Label>
         <Input
           id="title"
-          className="text-xl font-medium"
+          className="text-xl font-medium print:hidden"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="пример РА9260769"
         />
+        <h3 className="font-medium hidden print:block">{title}</h3>
       </div>
-      <Button onClick={handleCreate}>Создать новую</Button>
-      <div className="flex gap-2">
+      <div className="flex gap-2 print:hidden">
+        <Button onClick={handleCreate}>Создать новую</Button>
+        <Button onClick={handlePrint}>Печать</Button>
+      </div>
+      <div className="flex gap-2 print:hidden">
         <Button variant="outline" onClick={handleSave}>
           Сохранить
         </Button>
