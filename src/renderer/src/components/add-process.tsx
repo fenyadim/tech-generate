@@ -11,10 +11,11 @@ import { Plus } from 'lucide-react'
 import { AddProcessGroup } from './add-process-group'
 
 const blankProcess = ['Отрезная', 'Шлифовка', 'Слесарная']
-const bladeProcces = ['Фрезерная', 'Токарная', 'Расточка', 'Фрезерная ЧПУ']
-const gridingProcces = ['Кр.шлифовка', 'Проф.шлифовка', 'Оптика', 'Внутр.шлиф.', 'Xаузер']
-const thermalProcces = ['Отжиг', 'Т.О']
-const erosiveProcces = ['Эл.эрозия', 'Прошивка']
+const bladeProcess = ['Фрезерная', 'Токарная', 'Расточка', 'Фрезерная ЧПУ']
+const gridingProcess = ['Кр.шлифовка', 'Проф.шлифовка', 'Оптика', 'Внутр.шлиф.', 'Xаузер']
+const thermalProcess = ['Отжиг', 'Т.О']
+const erosiveProcess = ['Эл.эрозия', 'Прошивка']
+const controlProcess = ['Контроль']
 
 interface AddProcessProps {
   idParent: string
@@ -39,10 +40,11 @@ export const AddProcess = ({ idParent }: AddProcessProps) => {
           <DialogTitle>Выберите процесс</DialogTitle>
         </DialogHeader>
         <AddProcessGroup title="Заготовительная" group={blankProcess} onAdd={handleAdd} />
-        <AddProcessGroup title="Лезвийная" group={bladeProcces} onAdd={handleAdd} />
-        <AddProcessGroup title="Шлифовальная" group={gridingProcces} onAdd={handleAdd} />
-        <AddProcessGroup title="Термическая" group={thermalProcces} onAdd={handleAdd} />
-        <AddProcessGroup title="Эрозийная" group={erosiveProcces} onAdd={handleAdd} />
+        <AddProcessGroup title="Лезвийная" group={bladeProcess} onAdd={handleAdd} />
+        <AddProcessGroup title="Шлифовальная" group={gridingProcess} onAdd={handleAdd} />
+        <AddProcessGroup title="Термическая" group={thermalProcess} onAdd={handleAdd} />
+        <AddProcessGroup title="Эрозийная" group={erosiveProcess} onAdd={handleAdd} />
+        <AddProcessGroup title="Контроль" group={controlProcess} onAdd={handleAdd} />
       </DialogContent>
     </Dialog>
   )
