@@ -1,6 +1,6 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
@@ -50,7 +50,10 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.on('ping', (_, test) => {
+    console.log('JSON', test)
+    console.log('DATA', JSON.parse(test))
+  })
 
   createWindow()
 

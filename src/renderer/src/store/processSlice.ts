@@ -14,14 +14,12 @@ interface IProccess {
   [idTechCard: string]: IProcessItem[]
 }
 
-interface IProcessItem {
+export interface IProcessItem {
   id: string
   title: string
   time?: string
   description?: string
 }
-
-const initialState: IProccess = {}
 
 const moveProcess =
   (idTechCard: string, pos: number, type: 'up' | 'down') => (state: IProcessSlice) => {
@@ -35,7 +33,7 @@ const moveProcess =
   }
 
 export const processSlice: StateCreator<IProcessSlice, [], [], IProcessSlice> = (set) => ({
-  process: initialState,
+  process: {},
   addProcess: (title: string, idTechCard: string) =>
     set((state) => ({
       process: {

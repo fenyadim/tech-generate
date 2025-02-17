@@ -1,7 +1,8 @@
+import { useActionSignal } from '@/shared/hooks/useActionSignal'
 import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
 import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 interface ProcessItemProps {
   id: string
@@ -22,18 +23,14 @@ export const ProcessItem = ({
   description = '',
   length
 }: ProcessItemProps) => {
-  const { signal, onSignalReset, removeProcess, moveProcessDown, moveProcessUp, changeText } =
-    useStore()
+  const { removeProcess, moveProcessDown, moveProcessUp, changeText } = useStore()
   const [value, setValue] = useState(time)
   const [textAreaValue, setTextAreaValue] = useState(description)
 
-  useEffect(() => {
-    if (signal === 'save') {
-      changeText(id, value, 'time', parentId)
-      changeText(id, textAreaValue, 'description', parentId)
-      onSignalReset()
-    }
-  }, [signal])
+  useActionSignal(() => {
+    changeText(id, value, 'time', parentId)
+    changeText(id, textAreaValue, 'description', parentId)
+  })
 
   const handleDeleteItem = () => {
     removeProcess(id, parentId)

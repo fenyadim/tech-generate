@@ -1,6 +1,8 @@
-import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui'
+import { useActionSignal } from '@/shared/hooks/useActionSignal'
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
 import { Trash2 } from 'lucide-react'
+import { useState } from 'react'
 import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
 
@@ -17,19 +19,39 @@ interface TechCardProps {
 //   { title: 'Эл.эрозия' }
 // ]
 
-export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
-  const { process, onSignalSave } = useStore()
+export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
+  const { process, changeTitle } = useStore()
+  const [titleValue, setTitleValue] = useState(title)
 
-  console.log(process[id])
+  useActionSignal(() => {
+    changeTitle(id, titleValue)
+  })
 
   const handleDelete = () => {
     onDelete(id)
   }
 
   return (
-    <Card className="w-96 h-fit">
+    <Card className="w-96 h-fit relative">
+      <Button
+        className="absolute top-1 right-1"
+        title="Удалить"
+        variant="ghost"
+        size="icon"
+        onClick={handleDelete}
+      >
+        <Trash2 className="text-red-600" />
+      </Button>
       <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardTitle>
+          <Label htmlFor="title">Название и номер детали</Label>
+          <Input
+            id="title"
+            className="text-xl"
+            value={titleValue}
+            onChange={(e) => setTitleValue(e.target.value)}
+          />
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
         <div className="grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 justify-items-center px-2 *:font-medium">
@@ -53,12 +75,12 @@ export const TechCard = ({ id, title, onDelete }: TechCardProps) => {
           })}
         <AddProcess idParent={id} />
       </CardContent>
-      <CardFooter className="gap-3">
+      {/* <CardFooter className="gap-3">
         <Button onClick={onSignalSave}>Сохранить</Button>
         <Button title="Удалить" variant="destructive" size="icon" onClick={handleDelete}>
           <Trash2 />
         </Button>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   )
 }
