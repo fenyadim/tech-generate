@@ -1,4 +1,3 @@
-import { useActionSignal } from '@/shared/hooks/useActionSignal'
 import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
 import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
@@ -24,13 +23,8 @@ export const ProcessItem = ({
   length
 }: ProcessItemProps) => {
   const { removeProcess, moveProcessDown, moveProcessUp, changeText } = useStore()
-  const [value, setValue] = useState(time)
+  const [timeValue, setTimeValue] = useState(time)
   const [textAreaValue, setTextAreaValue] = useState(description)
-
-  useActionSignal(() => {
-    changeText(id, value, 'time', parentId)
-    changeText(id, textAreaValue, 'description', parentId)
-  })
 
   const handleDeleteItem = () => {
     removeProcess(id, parentId)
@@ -44,6 +38,12 @@ export const ProcessItem = ({
     moveProcessUp(pos - 1, parentId)
   }
 
+  const onFocusOut = (field: 'time' | 'description') => () => {
+    if (field === 'time' && timeValue !== time) changeText(id, timeValue, 'time', parentId)
+    if (field === 'description' && textAreaValue !== description)
+      changeText(id, textAreaValue, 'description', parentId)
+  }
+
   return (
     <div>
       <div className="grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg">
@@ -52,8 +52,9 @@ export const ProcessItem = ({
         <Input
           className="border-none shadow-none rounded-none z-10"
           placeholder="Норма времени"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
+          value={timeValue}
+          onChange={(e) => setTimeValue(e.target.value)}
+          onBlur={onFocusOut('time')}
         />
         <div className="flex gap-0.5 justify-self-end">
           {pos !== 1 && (
@@ -104,6 +105,7 @@ export const ProcessItem = ({
           className="rounded-none shadow-none rounded-b-lg [field-sizing:content] resize-none"
           value={textAreaValue}
           onChange={(e) => setTextAreaValue(e.target.value)}
+          onBlur={onFocusOut('description')}
         />
       )}
     </div>

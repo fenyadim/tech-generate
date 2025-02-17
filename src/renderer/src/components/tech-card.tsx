@@ -1,4 +1,3 @@
-import { useActionSignal } from '@/shared/hooks/useActionSignal'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
 import { Trash2 } from 'lucide-react'
@@ -23,12 +22,12 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
   const { process, changeTitle } = useStore()
   const [titleValue, setTitleValue] = useState(title)
 
-  useActionSignal(() => {
-    changeTitle(id, titleValue)
-  })
-
   const handleDelete = () => {
     onDelete(id)
+  }
+
+  const onChangeTitle = () => {
+    if (titleValue !== title) changeTitle(id, titleValue)
   }
 
   return (
@@ -50,6 +49,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
             className="text-xl"
             value={titleValue}
             onChange={(e) => setTitleValue(e.target.value)}
+            onBlur={onChangeTitle}
           />
         </CardTitle>
       </CardHeader>
@@ -60,7 +60,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
           <p>Норма</p>
         </div>
         {!!process[id] &&
-          process[id].map(({ id: processId, title, time }, index) => {
+          process[id].map(({ id: processId, title, time, description }, index) => {
             return (
               <ProcessItem
                 key={processId}
@@ -69,6 +69,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
                 pos={index + 1}
                 title={title}
                 time={time}
+                description={description}
                 length={process[id]?.length}
               />
             )

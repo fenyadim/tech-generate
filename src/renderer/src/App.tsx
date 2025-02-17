@@ -13,7 +13,7 @@ function App(): JSX.Element {
   console.log('PROCESS', process)
 
   const handleClick = () => {
-    createTechCard('Test')
+    createTechCard()
   }
 
   const handleDelete = (id: string) => {
@@ -25,7 +25,7 @@ function App(): JSX.Element {
       <Header />
       <div className="relative flex flex-wrap items-stretch gap-4 pb-4">
         {tech.map(({ title, id }) => (
-          <TechCard id={String(id)} title={`${title} ${id}`} key={id} onDelete={handleDelete} />
+          <TechCard id={String(id)} title={title} key={id} onDelete={handleDelete} />
         ))}
         <Button variant="outline" className="h-auto w-96" onClick={handleClick}>
           <Plus />

@@ -1,5 +1,6 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import fs from 'fs'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
@@ -53,6 +54,54 @@ app.whenReady().then(() => {
   ipcMain.on('ping', (_, test) => {
     console.log('JSON', test)
     console.log('DATA', JSON.parse(test))
+  })
+
+  ipcMain.on('save', async (_, { data, fileName }) => {
+    const dataDirectory = join(app.getPath('userData'), 'data')
+    if (!fs.existsSync(dataDirectory)) {
+      fs.mkdirSync(dataDirectory)
+    }
+
+    let filePath = join(dataDirectory, `${fileName}.json`)
+
+    if (fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+      return { status: 'success', filePath }
+    }
+
+    const result = await dialog.showSaveDialog({
+      defaultPath: filePath,
+      filters: [{ name: 'JSON Files', extensions: ['json'] }]
+    })
+
+    if (!result.canceled && result.filePath) {
+      filePath = result.filePath
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+      return { status: 'success', filePath }
+    } else {
+      return { status: 'cancelled' }
+    }
+  })
+
+  ipcMain.handle('open', async () => {
+    const result = await dialog.showOpenDialog({
+      title: 'Открыть файл',
+      filters: [{ name: 'JSON Files', extensions: ['json'] }],
+      properties: ['openFile']
+    })
+
+    if (result.canceled) {
+      return { status: 'cancelled' }
+    }
+
+    const filePath = result.filePaths[0]
+    try {
+      const data = fs.readFileSync(filePath, 'utf-8')
+      const parsedData = JSON.parse(data)
+      return { status: 'success', filePath, data: parsedData }
+    } catch (error) {
+      return { status: 'error', message: 'Не удалось прочитать файл.' }
+    }
   })
 
   createWindow()

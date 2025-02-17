@@ -1,24 +1,92 @@
-import { Button } from '@/shared/ui'
+import { useToast } from '@/shared/hooks/use-toast'
+import { Button, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
+import _ from 'lodash'
+import { useState } from 'react'
 
 export const Header = () => {
-  const { tech, process, onSignalSave } = useStore()
+  const { tech, process, importTechCard, importProccess } = useStore()
+  const [title, setTitle] = useState('')
+  const { toast } = useToast()
 
-  const handleSave = () => {
-    onSignalSave()
-    window.electron.ipcRenderer.send(
-      'ping',
-      JSON.stringify(tech.map((item) => ({ ...item, process: JSON.stringify(process[item.id]) })))
-    )
+  const handleSave = async () => {
+    try {
+      if (!title) {
+        toast({
+          title: 'Ошибка',
+          description: 'Введите номер оснастки',
+          variant: 'destructive'
+        })
+        return
+      }
+
+      if (tech.length === 0) {
+        toast({
+          title: 'Ошибка',
+          description: 'Ничего не выбрано',
+          variant: 'destructive'
+        })
+        return
+      }
+      window.electron.ipcRenderer.send('save', {
+        fileName: title,
+        data: {
+          titleTool: title,
+          techList: tech.map((item) => ({ ...item, process: process[item.id] }))
+        }
+      })
+      toast({
+        title: 'Успешно',
+        description: 'Файл сохранен',
+        variant: 'success'
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleOpen = async () => {
+    try {
+      const { data } = await window.electron.ipcRenderer.invoke('open')
+      setTitle(data.titleTool)
+      importTechCard(data.techList.map((item) => _.omit(item, 'process')))
+      importProccess(data.techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleCreate = () => {
+    setTitle('')
+    importTechCard([])
+    importProccess({})
   }
 
   return (
     <header className="mb-4 flex items-center justify-between p-2 border-b">
       <div>
-        <p className="text-sm font-medium opacity-60">Номер оснастки</p>
-        <h2 className="text-2xl font-bold">РА9260769</h2>
+        <Label htmlFor="title">Номер оснастки</Label>
+        <Input
+          id="title"
+          className="text-xl font-medium"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="пример РА9260769"
+        />
       </div>
-      <Button onClick={handleSave}>Записать</Button>
+      <Button onClick={handleCreate}>Создать новую</Button>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={handleSave}>
+          Сохранить
+        </Button>
+        <Button variant="outline" onClick={handleOpen}>
+          Открыть
+        </Button>
+      </div>
     </header>
   )
 }
