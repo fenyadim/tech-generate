@@ -10,6 +10,7 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
+    title: 'Генератор тех.процессов',
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -48,12 +49,6 @@ app.whenReady().then(() => {
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
-  })
-
-  // IPC test
-  ipcMain.on('ping', (_, test) => {
-    console.log('JSON', test)
-    console.log('DATA', JSON.parse(test))
   })
 
   ipcMain.on('save', async (_, { data, fileName }) => {

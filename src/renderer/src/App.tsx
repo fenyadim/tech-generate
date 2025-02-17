@@ -5,12 +5,7 @@ import { Button } from './shared/ui'
 import { useStore } from './store'
 
 function App(): JSX.Element {
-  const { tech, process, createTechCard, deleteTechCard } = useStore()
-
-  window.electron.ipcRenderer.on('save', () => console.log('save success'))
-
-  console.log('TECH', tech)
-  console.log('PROCESS', process)
+  const { tech, createTechCard, deleteTechCard } = useStore()
 
   const handleClick = () => {
     createTechCard()
