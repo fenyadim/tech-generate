@@ -107,6 +107,7 @@ export const Header = () => {
   return (
     <header className="mb-4 flex items-center justify-between p-2 border-b print:hidden">
       <div>
+        <p>Test</p>
         <Label htmlFor="title">Номер оснастки</Label>
         <Input
           id="title"
