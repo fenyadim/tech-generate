@@ -1,5 +1,6 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
 import fs from 'fs'
 import { join } from 'path'
@@ -7,8 +8,8 @@ import icon from '../../resources/icon.png?asset'
 
 let mainWindow: BrowserWindow
 
-autoUpdater.autoDownload = false
-autoUpdater.autoInstallOnAppQuit = true
+log.transports.file.level = 'info'
+autoUpdater.logger = log
 
 function createWindow(): void {
   // Create the browser window.
@@ -165,6 +166,29 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+autoUpdater.on('update-available', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Обновление доступно',
+    message: 'Доступна новая версия. Загрузка...'
+  })
+})
+
+autoUpdater.on('update-downloaded', () => {
+  dialog
+    .showMessageBox({
+      type: 'info',
+      title: 'Обновление загружено',
+      message: 'Обновление загружено. Перезапустить приложение?',
+      buttons: ['Да', 'Позже']
+    })
+    .then((result) => {
+      if (result.response === 0) {
+        autoUpdater.quitAndInstall()
+      }
+    })
 })
 
 // In this file you can include the rest of your app"s specific main process
