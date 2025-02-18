@@ -4,9 +4,11 @@ import fs from 'fs'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
+let mainWindow: BrowserWindow
+
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -28,6 +30,22 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
+  mainWindow.webContents.on('before-input-event', async (event, input) => {
+    if (input.control && input.code === 'KeyP') {
+      event.preventDefault()
+      handlePrint()
+    }
+    if (input.control && input.code === 'KeyO') {
+      event.preventDefault()
+      handleOpen()
+    }
+    if (input.control && input.code === 'KeyS') {
+      event.preventDefault()
+      const data = await mainWindow.webContents.executeJavaScript('window.getSaveData()')
+      handleSave(data)
+    }
+  })
+
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -35,6 +53,74 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+}
+
+async function handleSave({ data, fileName }) {
+  const dataDirectory = join(app.getPath('userData'), 'data')
+  if (!fs.existsSync(dataDirectory)) {
+    fs.mkdirSync(dataDirectory)
+  }
+
+  let filePath = join(dataDirectory, `${fileName}.json`)
+
+  if (fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+    mainWindow.webContents.send('file-saved')
+    return { status: 'success', filePath }
+  }
+
+  const result = await dialog.showSaveDialog({
+    defaultPath: filePath,
+    filters: [{ name: 'JSON Files', extensions: ['json'] }]
+  })
+
+  if (!result.canceled && result.filePath) {
+    filePath = result.filePath
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+    mainWindow.webContents.send('file-saved')
+    return { status: 'success', filePath }
+  } else {
+    return { status: 'cancelled' }
+  }
+}
+
+async function handleOpen() {
+  const result = await dialog.showOpenDialog({
+    title: 'Открыть файл',
+    filters: [{ name: 'JSON Files', extensions: ['json'] }],
+    properties: ['openFile']
+  })
+
+  if (result.canceled) {
+    return { status: 'cancelled' }
+  }
+
+  const filePath = result.filePaths[0]
+  try {
+    const data = fs.readFileSync(filePath, 'utf-8')
+    const parsedData = JSON.parse(data)
+    mainWindow.webContents.send('file-opened', parsedData)
+    return { status: 'success', filePath, data: parsedData }
+  } catch (error) {
+    return { status: 'error', message: 'Не удалось прочитать файл.' }
+  }
+}
+
+function handlePrint() {
+  const win = BrowserWindow.getFocusedWindow()
+  if (!win) return { status: 'error', message: 'Нет активного окна' }
+
+  win.webContents.print(
+    {
+      printBackground: true,
+      silent: false
+    },
+    (success, error) => {
+      if (!success) console.error('Ошибка печати:', error)
+    }
+  )
+
+  return { status: 'success' }
 }
 
 // This method will be called when Electron has finished
@@ -51,64 +137,11 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.on('save', async (_, { data, fileName }) => {
-    const dataDirectory = join(app.getPath('userData'), 'data')
-    if (!fs.existsSync(dataDirectory)) {
-      fs.mkdirSync(dataDirectory)
-    }
+  ipcMain.on('save', async (_, data) => handleSave(data))
 
-    let filePath = join(dataDirectory, `${fileName}.json`)
+  ipcMain.handle('open', async () => handleOpen())
 
-    if (fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-      return { status: 'success', filePath }
-    }
-
-    const result = await dialog.showSaveDialog({
-      defaultPath: filePath,
-      filters: [{ name: 'JSON Files', extensions: ['json'] }]
-    })
-
-    if (!result.canceled && result.filePath) {
-      filePath = result.filePath
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-      return { status: 'success', filePath }
-    } else {
-      return { status: 'cancelled' }
-    }
-  })
-
-  ipcMain.handle('open', async () => {
-    const result = await dialog.showOpenDialog({
-      title: 'Открыть файл',
-      filters: [{ name: 'JSON Files', extensions: ['json'] }],
-      properties: ['openFile']
-    })
-
-    if (result.canceled) {
-      return { status: 'cancelled' }
-    }
-
-    const filePath = result.filePaths[0]
-    try {
-      const data = fs.readFileSync(filePath, 'utf-8')
-      const parsedData = JSON.parse(data)
-      return { status: 'success', filePath, data: parsedData }
-    } catch (error) {
-      return { status: 'error', message: 'Не удалось прочитать файл.' }
-    }
-  })
-
-  ipcMain.handle('print', async () => {
-    const win = BrowserWindow.getFocusedWindow()
-    if (!win) return { status: 'error', message: 'Нет активного окна' }
-
-    win.webContents.print({}, (success, error) => {
-      if (!success) console.error('Ошибка печати:', error)
-    })
-
-    return { status: 'success' }
-  })
+  ipcMain.handle('print', async () => handlePrint())
 
   createWindow()
 

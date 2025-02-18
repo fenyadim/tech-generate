@@ -2,12 +2,44 @@ import { useToast } from '@/shared/hooks/use-toast'
 import { Button, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
 import _ from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const Header = () => {
   const { tech, process, importTechCard, importProccess } = useStore()
   const [title, setTitle] = useState('')
   const { toast } = useToast()
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on('file-saved', () => {
+      toast({
+        title: 'Успешно',
+        description: 'Файл сохранен',
+        variant: 'success'
+      })
+    })
+    window.electron.ipcRenderer.on('file-opened', (__, data) => {
+      const { titleTool, techList } = data
+      setTitle(titleTool)
+      importTechCard(techList.map((item) => _.omit(item, 'process')))
+      importProccess(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+    })
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('file-opened')
+    }
+  }, [])
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  window.getSaveData = () => {
+    return {
+      fileName: title,
+      data: {
+        titleTool: title,
+        techList: tech.map((item) => ({ ...item, process: process[item.id] }))
+      }
+    }
+  }
 
   const handleSave = async () => {
     try {
@@ -28,17 +60,13 @@ export const Header = () => {
         })
         return
       }
+
       window.electron.ipcRenderer.send('save', {
         fileName: title,
         data: {
           titleTool: title,
           techList: tech.map((item) => ({ ...item, process: process[item.id] }))
         }
-      })
-      toast({
-        title: 'Успешно',
-        description: 'Файл сохранен',
-        variant: 'success'
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -49,10 +77,7 @@ export const Header = () => {
 
   const handleOpen = async () => {
     try {
-      const { data } = await window.electron.ipcRenderer.invoke('open')
-      setTitle(data.titleTool)
-      importTechCard(data.techList.map((item) => _.omit(item, 'process')))
-      importProccess(data.techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+      await window.electron.ipcRenderer.invoke('open')
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
