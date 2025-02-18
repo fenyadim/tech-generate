@@ -31,6 +31,12 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
     if (titleValue !== title) changeTitle(id, titleValue)
   }
 
+  const sumNormTime = () => {
+    return process[id]
+      ? process[id].reduce((acc, item) => acc + (item.time ? Number(item.time) : 0), 0)
+      : 0
+  }
+
   return (
     <Card
       className={cn('w-96 h-fit relative break-inside-avoid  print:shadow-none', {
@@ -83,6 +89,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
             )
           })}
         <AddProcess idParent={id} />
+        <p className="font-medium">Общее время: {sumNormTime()}</p>
       </CardContent>
     </Card>
   )

@@ -58,10 +58,14 @@ export const ProcessItem = ({
         <p className="text-right">{pos}.</p>
         <p className="align-middle text-center">{title}</p>
         <Input
-          className={cn('border-none shadow-none rounded-none z-10 text-center', {
-            'print:hidden': timeValue === ''
-          })}
+          className={cn(
+            'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+            {
+              'print:hidden': timeValue === ''
+            }
+          )}
           placeholder="Норма времени"
+          type="number"
           value={timeValue}
           onChange={(e) => setTimeValue(e.target.value)}
           onBlur={onFocusOut('time')}
