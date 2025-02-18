@@ -15,8 +15,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "https://github.com/fenyadim",
-        "repo": "https://github.com/fenyadim/tech-generate"
+        "owner": "fenyadim",
+        "repo": "tech-generate"
       }
     ]
   },

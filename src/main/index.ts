@@ -11,6 +11,12 @@ let mainWindow: BrowserWindow
 log.transports.file.level = 'info'
 autoUpdater.logger = log
 
+autoUpdater.setFeedURL({
+  provider: 'github',
+  repo: 'tech-generate',
+  owner: 'fenyadim'
+})
+
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -156,6 +162,7 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
+  log.info('Проверка обновлений...')
   autoUpdater.checkForUpdatesAndNotify()
 })
 
@@ -168,12 +175,17 @@ app.on('window-all-closed', () => {
   }
 })
 
-autoUpdater.on('update-available', () => {
+autoUpdater.on('update-available', (info) => {
+  log.info(`Обновление доступно: ${info.version}`)
   dialog.showMessageBox({
     type: 'info',
     title: 'Обновление доступно',
     message: 'Доступна новая версия. Загрузка...'
   })
+})
+
+autoUpdater.on('update-not-available', () => {
+  log.info('Обновления нет.')
 })
 
 autoUpdater.on('update-downloaded', () => {
