@@ -1,10 +1,14 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import { autoUpdater } from 'electron-updater'
 import fs from 'fs'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
 let mainWindow: BrowserWindow
+
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
 
 function createWindow(): void {
   // Create the browser window.
@@ -150,6 +154,8 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  autoUpdater.checkForUpdatesAndNotify()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

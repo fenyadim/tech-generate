@@ -12,13 +12,6 @@ interface TechCardProps {
   onDelete: (id: string) => void
 }
 
-// const mockProcess = [
-//   { title: 'Заготовка', time: '2.5' },
-//   { title: 'Проф.шлифовка', time: '1.5' },
-//   { title: 'Оптика', time: '1.5' },
-//   { title: 'Эл.эрозия' }
-// ]
-
 export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
   const { process, changeTitle } = useStore()
   const [titleValue, setTitleValue] = useState(title)
