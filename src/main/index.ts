@@ -14,7 +14,8 @@ autoUpdater.logger = log
 autoUpdater.setFeedURL({
   provider: 'github',
   repo: 'tech-generate',
-  owner: 'fenyadim'
+  owner: 'fenyadim',
+  token: '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'
 })
 
 function createWindow(): void {
