@@ -89,7 +89,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
             )
           })}
         <AddProcess idParent={id} />
-        <p className="font-medium">Общее время: {sumNormTime()}</p>
+        <p className="font-medium">Общее время: {sumNormTime().toFixed(2)}</p>
       </CardContent>
     </Card>
   )
