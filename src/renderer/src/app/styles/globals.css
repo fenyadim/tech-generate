@@ -63,7 +63,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border print:text-sm;
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;

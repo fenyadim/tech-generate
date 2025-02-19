@@ -50,11 +50,11 @@ function createWindow(): void {
       event.preventDefault()
       handleOpen()
     }
-    if (input.control && input.code === 'KeyS') {
-      event.preventDefault()
-      const data = await mainWindow.webContents.executeJavaScript('window.getSaveData()')
-      handleSave(data)
-    }
+    // if (input.control && input.code === 'KeyS') {
+    //   event.preventDefault()
+    //   const data = await mainWindow.webContents.executeJavaScript('window.getSaveData()')
+    //   handleSave(data)
+    // }
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -186,6 +186,15 @@ autoUpdater.on('update-available', (info) => {
 
 autoUpdater.on('update-not-available', () => {
   log.info('Обновления нет.')
+})
+
+autoUpdater.on('download-progress', (info) => {
+  log.info(`Загрузка обновления: ${info.percent}%`)
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Загрузка обновления',
+    message: `Загрузка обновления: ${info.percent}%`
+  })
 })
 
 autoUpdater.on('update-downloaded', () => {

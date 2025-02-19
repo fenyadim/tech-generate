@@ -31,17 +31,19 @@ export const Header = () => {
     }
   }, [])
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
-  window.getSaveData = () => {
-    return {
-      fileName: title,
-      data: {
-        titleTool: title,
-        techList: tech.map((item) => ({ ...item, process: process[item.id] }))
-      }
-    }
-  }
+  // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // //@ts-ignore
+  // window.getSaveData = () => {
+  //   console.log(tech.map((item) => ({ ...item, process: process[item.id] })))
+  //   return {
+  //     fileName: title,
+  //     data: {
+  //       titleTool: title,
+  //       author,
+  //       techList: tech.map((item) => ({ ...item, process: process[item.id] }))
+  //     }
+  //   }
+  // }
 
   const handleSave = async () => {
     try {

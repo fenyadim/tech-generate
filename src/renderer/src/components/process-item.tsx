@@ -3,7 +3,7 @@ import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
 import { FieldType, IProcessItem } from '@/store/processSlice'
 import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface ProcessItemProps extends IProcessItem {
   parentId: string
@@ -15,7 +15,7 @@ export const ProcessItem = ({
   id,
   parentId,
   pos,
-  time = 0,
+  time = '',
   title,
   description = '',
   category = 0,
@@ -36,6 +36,12 @@ export const ProcessItem = ({
 
   const handleMoveUp = () => {
     moveProcessUp(pos - 1, parentId)
+  }
+
+  const onChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextAreaValue(e.target.value)
+    // if (textAreaValue !== description && textAreaValue === ' ')
+    // changeText(id, textAreaValue, 'description', parentId)
   }
 
   const onFocusOut = (field: FieldType) => () => {
@@ -62,20 +68,20 @@ export const ProcessItem = ({
           className={cn(
             'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
             {
-              'print:hidden': timeValue === 0
+              'print:hidden': timeValue === ''
             }
           )}
           placeholder="Норма времени"
           type="number"
           value={timeValue}
-          onChange={(e) => setTimeValue(Number(e.target.value))}
+          onChange={(e) => setTimeValue(e.target.value)}
           onBlur={onFocusOut('time')}
         />
         <Input
           className={cn(
             'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
             {
-              'print:hidden': timeValue === 0
+              'print:hidden': categoryValue === 0
             }
           )}
           placeholder="Разряд"
@@ -119,23 +125,43 @@ export const ProcessItem = ({
           </Button>
         </div>
       </div>
-      {!textAreaValue ? (
-        <Button
-          variant="outline"
-          className="shadow-none w-full rounded-t-none print:hidden"
-          onClick={() => setTextAreaValue('1.')}
-        >
-          Добавить описание
-          <ListPlus />
-        </Button>
+      {textAreaValue === '' ? (
+        <AddNewDescription id={id} idParent={parentId} setText={setTextAreaValue} />
       ) : (
         <Textarea
           className="rounded-none shadow-none rounded-b-lg [field-sizing:content] resize-none"
           value={textAreaValue}
-          onChange={(e) => setTextAreaValue(e.target.value)}
+          onChange={onChangeTextArea}
           onBlur={onFocusOut('description')}
         />
       )}
     </div>
+  )
+}
+
+const AddNewDescription = ({
+  setText,
+  id,
+  idParent
+}: {
+  setText: (text: string) => void
+  id: string
+  idParent: string
+}) => {
+  const { changeText } = useStore()
+
+  useEffect(() => {
+    changeText(id, '', 'description', idParent)
+  }, [])
+
+  return (
+    <Button
+      variant="outline"
+      className="shadow-none w-full rounded-t-none print:hidden"
+      onClick={() => setText('1.')}
+    >
+      Добавить описание
+      <ListPlus />
+    </Button>
   )
 }

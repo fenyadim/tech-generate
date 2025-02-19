@@ -20,7 +20,7 @@ export type FieldType = 'time' | 'description' | 'category'
 export interface IProcessItem {
   id: string
   title: string
-  time?: number
+  time?: string
   description?: string
   category?: number
 }
