@@ -16,13 +16,14 @@ function App(): JSX.Element {
   }
 
   return (
-    <main className="h-screen p-4">
+    <main className="h-screen p-4 print:p-0">
       <Header />
-      <div className="relative flex flex-wrap items-stretch gap-4 pb-4">
+      <div className="relative grid grid-cols-auto-fill print:flex print:flex-wrap print:flex-col print:h-full gap-4 pb-4">
+        {/* <div className="relative grid grid-cols-auto-fill grid-rows-[masonry] grid-flow-dense gap-4 pb-4"> */}
         {tech.map(({ title, id }) => (
           <TechCard id={String(id)} title={title} key={id} onDelete={handleDelete} />
         ))}
-        <Button variant="outline" className="h-auto w-96 print:hidden" onClick={handleClick}>
+        <Button variant="outline" className="h-auto print:hidden" onClick={handleClick}>
           <Plus />
         </Button>
       </div>

@@ -32,7 +32,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
 
   return (
     <Card
-      className={cn('w-96 h-fit relative break-inside-avoid  print:shadow-none', {
+      className={cn('h-fit relative break-inside-avoid print:shadow-none print:w-[340px]', {
         'print:hidden': !process[id]
       })}
     >
@@ -45,7 +45,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
       >
         <Trash2 className="text-red-600" />
       </Button>
-      <CardHeader>
+      <CardHeader className="print:p-2">
         <CardTitle>
           <Label className="print:hidden" htmlFor="title">
             Название и номер детали
@@ -60,24 +60,23 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
           <h3 className="font-medium hidden print:block">{title}</h3>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        <div className="grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 justify-items-center px-2 *:font-medium">
+      <CardContent className="flex flex-col gap-2 print:p-2">
+        <div className="grid grid-cols-[0.3fr_2fr_1fr_1fr_90px] gap-2 justify-items-center px-2 *:font-medium print:grid-cols-[0.3fr_2fr_1fr_1fr]">
           <p>№</p>
           <p>Процесс</p>
           <p>Норма</p>
+          <p>Разряд</p>
         </div>
         {!!process[id] &&
-          process[id].map(({ id: processId, title, time, description }, index) => {
+          process[id].map(({ id: processId, ...items }, index) => {
             return (
               <ProcessItem
                 key={processId}
                 id={processId}
                 parentId={id}
                 pos={index + 1}
-                title={title}
-                time={time}
-                description={description}
                 length={process[id]?.length}
+                {...items}
               />
             )
           })}

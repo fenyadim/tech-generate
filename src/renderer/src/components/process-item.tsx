@@ -1,16 +1,13 @@
 import { cn } from '@/shared/lib/utils'
 import { Button, Input, Textarea } from '@/shared/ui'
 import { useStore } from '@/store'
+import { FieldType, IProcessItem } from '@/store/processSlice'
 import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
 import { useState } from 'react'
 
-interface ProcessItemProps {
-  id: string
+interface ProcessItemProps extends IProcessItem {
   parentId: string
   pos: number
-  title: string
-  description?: string
-  time?: string
   length: number
 }
 
@@ -18,14 +15,16 @@ export const ProcessItem = ({
   id,
   parentId,
   pos,
-  time = '',
+  time = 0,
   title,
   description = '',
+  category = 0,
   length
 }: ProcessItemProps) => {
   const { removeProcess, moveProcessDown, moveProcessUp, changeText } = useStore()
   const [timeValue, setTimeValue] = useState(time)
   const [textAreaValue, setTextAreaValue] = useState(description)
+  const [categoryValue, setCategoryValue] = useState(category)
 
   const handleDeleteItem = () => {
     removeProcess(id, parentId)
@@ -39,17 +38,19 @@ export const ProcessItem = ({
     moveProcessUp(pos - 1, parentId)
   }
 
-  const onFocusOut = (field: 'time' | 'description') => () => {
+  const onFocusOut = (field: FieldType) => () => {
     if (field === 'time' && timeValue !== time) changeText(id, timeValue, 'time', parentId)
     if (field === 'description' && textAreaValue !== description)
       changeText(id, textAreaValue, 'description', parentId)
+    if (field === 'category' && categoryValue !== category)
+      changeText(id, categoryValue, 'category', parentId)
   }
 
   return (
     <div>
       <div
         className={cn(
-          'grid grid-cols-[0.3fr_2fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg',
+          'grid grid-cols-[0.3fr_2fr_1fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg print:grid-cols-[0.3fr_2fr_1fr_1fr]',
           {
             'print:rounded-b-lg print:border-b': description === ''
           }
@@ -61,14 +62,27 @@ export const ProcessItem = ({
           className={cn(
             'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
             {
-              'print:hidden': timeValue === ''
+              'print:hidden': timeValue === 0
             }
           )}
           placeholder="Норма времени"
           type="number"
           value={timeValue}
-          onChange={(e) => setTimeValue(e.target.value)}
+          onChange={(e) => setTimeValue(Number(e.target.value))}
           onBlur={onFocusOut('time')}
+        />
+        <Input
+          className={cn(
+            'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+            {
+              'print:hidden': timeValue === 0
+            }
+          )}
+          placeholder="Разряд"
+          type="number"
+          value={categoryValue}
+          onChange={(e) => setCategoryValue(Number(e.target.value))}
+          onBlur={onFocusOut('category')}
         />
         <div className="flex gap-0.5 justify-self-end print:hidden">
           {pos !== 1 && (

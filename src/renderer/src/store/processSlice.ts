@@ -7,7 +7,7 @@ export interface IProcessSlice {
   removeProcess: (id: string, idTechCard: string) => void
   moveProcessDown: (pos: number, idTechCard: string) => void
   moveProcessUp: (pos: number, idTechCard: string) => void
-  changeText: (id: string, text: string, field: 'time' | 'description', idTechCard: string) => void
+  changeText: (id: string, text: number | string, field: FieldType, idTechCard: string) => void
   importProccess: (data: IProccess) => void
 }
 
@@ -15,11 +15,14 @@ interface IProccess {
   [idTechCard: string]: IProcessItem[]
 }
 
+export type FieldType = 'time' | 'description' | 'category'
+
 export interface IProcessItem {
   id: string
   title: string
-  time?: string
+  time?: number
   description?: string
+  category?: number
 }
 
 const moveProcess =
@@ -53,7 +56,7 @@ export const processSlice: StateCreator<IProcessSlice, [], [], IProcessSlice> = 
     })),
   moveProcessDown: (pos: number, idTechCard: string) => set(moveProcess(idTechCard, pos, 'down')),
   moveProcessUp: (pos: number, idTechCard: string) => set(moveProcess(idTechCard, pos, 'up')),
-  changeText: (id: string, text: string, field: 'time' | 'description', idTechCard: string) =>
+  changeText: (id: string, text: string | number, field: FieldType, idTechCard: string) =>
     set((state) => ({
       process: {
         ...state.process,
