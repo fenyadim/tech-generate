@@ -1,9 +1,11 @@
 import { cn } from '@/shared/lib/utils'
-import { Button, Input, Textarea } from '@/shared/ui'
+import { Button } from '@/shared/ui'
 import { useStore } from '@/store'
-import { FieldType, IProcessItem } from '@/store/processSlice'
-import { ArrowDown, ArrowUp, ListPlus, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { IProcessItem } from '@/store/processSlice'
+import { ArrowDown, ArrowUp, X } from 'lucide-react'
+import { AddDescriptionButton } from './add-description-button'
+import { FieldInput } from './field-input'
+import { FieldTextarea } from './field-textarea'
 
 interface ProcessItemProps extends IProcessItem {
   parentId: string
@@ -21,10 +23,7 @@ export const ProcessItem = ({
   category = 0,
   length
 }: ProcessItemProps) => {
-  const { removeProcess, moveProcessDown, moveProcessUp, changeText } = useStore()
-  const [timeValue, setTimeValue] = useState(time)
-  const [textAreaValue, setTextAreaValue] = useState(description)
-  const [categoryValue, setCategoryValue] = useState(category)
+  const { removeProcess, moveProcessDown, moveProcessUp } = useStore()
 
   const handleDeleteItem = () => {
     removeProcess(id, parentId)
@@ -38,57 +37,30 @@ export const ProcessItem = ({
     moveProcessUp(pos - 1, parentId)
   }
 
-  const onChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextAreaValue(e.target.value)
-    // if (textAreaValue !== description && textAreaValue === ' ')
-    // changeText(id, textAreaValue, 'description', parentId)
-  }
-
-  const onFocusOut = (field: FieldType) => () => {
-    if (field === 'time' && timeValue !== time) changeText(id, timeValue, 'time', parentId)
-    if (field === 'description' && textAreaValue !== description)
-      changeText(id, textAreaValue, 'description', parentId)
-    if (field === 'category' && categoryValue !== category)
-      changeText(id, categoryValue, 'category', parentId)
-  }
-
   return (
     <div>
       <div
         className={cn(
-          'grid grid-cols-[0.3fr_2fr_1fr_1fr_90px] gap-2 px-2 items-center border border-b-0 rounded-t-lg print:grid-cols-[0.3fr_2fr_1fr_1fr]',
-          {
-            'print:rounded-b-lg print:border-b': description === ''
-          }
+          'grid grid-cols-[0.3fr_3fr_1fr_0.5fr_90px] gap-1 px-2 items-center border border-b-0 rounded-t-lg print:grid-cols-[0.3fr_2fr_1fr_1fr]'
         )}
       >
         <p className="text-right">{pos}.</p>
-        <p className="align-middle text-center">{title}</p>
-        <Input
-          className={cn(
-            'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-            {
-              'print:hidden': timeValue === ''
-            }
-          )}
+        <p className="align-middle text-center text-ellipsis">{title}</p>
+        <FieldInput
+          fieldName="time"
+          initialValue={time}
+          idProcess={id}
+          idParent={parentId}
           placeholder="Норма времени"
-          type="number"
-          value={timeValue}
-          onChange={(e) => setTimeValue(e.target.value)}
-          onBlur={onFocusOut('time')}
         />
-        <Input
-          className={cn(
-            'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-            {
-              'print:hidden': categoryValue === 0
-            }
-          )}
-          placeholder="Разряд"
+        <FieldInput
+          fieldName="category"
+          initialValue={category}
+          idProcess={id}
+          idParent={parentId}
+          min={0}
+          max={5}
           type="number"
-          value={categoryValue}
-          onChange={(e) => setCategoryValue(Number(e.target.value))}
-          onBlur={onFocusOut('category')}
         />
         <div className="flex gap-0.5 justify-self-end print:hidden">
           {pos !== 1 && (
@@ -125,43 +97,18 @@ export const ProcessItem = ({
           </Button>
         </div>
       </div>
-      {textAreaValue === '' ? (
-        <AddNewDescription id={id} idParent={parentId} setText={setTextAreaValue} />
+      <div
+        className={cn('hidden border print:block p-2', {
+          'rounded-b-lg border-b': description === ''
+        })}
+      >
+        <p className="font-medium opacity-50">Исполнитель</p>
+      </div>
+      {description === '' ? (
+        <AddDescriptionButton id={id} idParent={parentId} />
       ) : (
-        <Textarea
-          className="rounded-none shadow-none rounded-b-lg [field-sizing:content] resize-none"
-          value={textAreaValue}
-          onChange={onChangeTextArea}
-          onBlur={onFocusOut('description')}
-        />
+        <FieldTextarea idParent={parentId} idProcess={id} initialValue={description} />
       )}
     </div>
-  )
-}
-
-const AddNewDescription = ({
-  setText,
-  id,
-  idParent
-}: {
-  setText: (text: string) => void
-  id: string
-  idParent: string
-}) => {
-  const { changeText } = useStore()
-
-  useEffect(() => {
-    changeText(id, '', 'description', idParent)
-  }, [])
-
-  return (
-    <Button
-      variant="outline"
-      className="shadow-none w-full rounded-t-none print:hidden"
-      onClick={() => setText('1.')}
-    >
-      Добавить описание
-      <ListPlus />
-    </Button>
   )
 }

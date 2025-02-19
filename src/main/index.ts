@@ -50,11 +50,10 @@ function createWindow(): void {
       event.preventDefault()
       handleOpen()
     }
-    // if (input.control && input.code === 'KeyS') {
-    //   event.preventDefault()
-    //   const data = await mainWindow.webContents.executeJavaScript('window.getSaveData()')
-    //   handleSave(data)
-    // }
+    if (input.control && input.code === 'KeyS') {
+      event.preventDefault()
+      mainWindow.webContents.send('save-click')
+    }
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -117,20 +116,14 @@ async function handleOpen() {
   }
 }
 
-function handlePrint() {
+async function handlePrint() {
   const win = BrowserWindow.getFocusedWindow()
   if (!win) return { status: 'error', message: 'Нет активного окна' }
 
-  win.webContents.print(
-    {
-      printBackground: true,
-      silent: false
-    },
-    (success, error) => {
-      if (!success) console.error('Ошибка печати:', error)
-    }
-  )
-
+  win.webContents.print({}, (success, error) => {
+    if (!success) return { status: 'error', message: error }
+    return { status: 'success' }
+  })
   return { status: 'success' }
 }
 
@@ -152,8 +145,6 @@ app.whenReady().then(() => {
 
   ipcMain.handle('open', async () => handleOpen())
 
-  ipcMain.handle('print', async () => handlePrint())
-
   createWindow()
 
   app.on('activate', function () {
@@ -161,6 +152,8 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  ipcMain.handle('print', async () => handlePrint())
 
   log.info('Проверка обновлений...')
   autoUpdater.checkForUpdatesAndNotify()
@@ -188,12 +181,11 @@ autoUpdater.on('update-not-available', () => {
   log.info('Обновления нет.')
 })
 
-autoUpdater.on('download-progress', (info) => {
-  log.info(`Загрузка обновления: ${info.percent}%`)
+autoUpdater.on('download-progress', () => {
   dialog.showMessageBox({
     type: 'info',
     title: 'Загрузка обновления',
-    message: `Загрузка обновления: ${info.percent}%`
+    message: `Идет загрузка обновления. Подождите...`
   })
 })
 

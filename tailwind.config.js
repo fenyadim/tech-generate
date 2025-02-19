@@ -50,7 +50,7 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       gridTemplateColumns: {
-        'auto-fill': 'repeat(auto-fill, minmax(370px, 1fr))'
+        'auto-fill': 'repeat(auto-fill, minmax(360px, 1fr))'
       }
     }
   },

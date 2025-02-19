@@ -2,12 +2,14 @@ import { useToast } from '@/shared/hooks/use-toast'
 import { Button, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
 import _ from 'lodash'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const Header = () => {
   const { author, setAuthorStore, tech, process, importTechCard, importProccess } = useStore()
   const [title, setTitle] = useState('')
   const { toast } = useToast()
+
+  const btnSaveRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     window.electron.ipcRenderer.on('file-saved', () => {
@@ -17,6 +19,11 @@ export const Header = () => {
         variant: 'success'
       })
     })
+
+    window.electron.ipcRenderer.on('save-click', () => {
+      btnSaveRef.current?.click()
+    })
+
     window.electron.ipcRenderer.on('file-opened', (__, data) => {
       const { titleTool, techList, author } = data
       setTitle(titleTool)
@@ -27,23 +34,10 @@ export const Header = () => {
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('file-opened')
+      window.electron.ipcRenderer.removeAllListeners('save-click')
       window.electron.ipcRenderer.removeAllListeners('file-saved')
     }
   }, [])
-
-  // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // //@ts-ignore
-  // window.getSaveData = () => {
-  //   console.log(tech.map((item) => ({ ...item, process: process[item.id] })))
-  //   return {
-  //     fileName: title,
-  //     data: {
-  //       titleTool: title,
-  //       author,
-  //       techList: tech.map((item) => ({ ...item, process: process[item.id] }))
-  //     }
-  //   }
-  // }
 
   const handleSave = async () => {
     try {
@@ -109,13 +103,26 @@ export const Header = () => {
   const handlePrint = async () => {
     try {
       const result = await window.electron.ipcRenderer.invoke('print')
+      console.log(result)
       if (result.status === 'success') {
-        console.log('Страница отправлена на печать.')
+        toast({
+          title: 'Успешно',
+          description: 'Страница отправлена на печать.',
+          variant: 'success'
+        })
       } else {
-        console.error('Ошибка при печати:', result.message)
+        toast({
+          title: 'Ошибка',
+          description: `Ошибка при печати: ${result.message}`,
+          variant: 'destructive'
+        })
       }
     } catch (err) {
-      console.error('Ошибка:', err)
+      toast({
+        title: 'Ошибка',
+        description: `Ошибка: ${err}`,
+        variant: 'destructive'
+      })
     }
   }
 
@@ -153,7 +160,7 @@ export const Header = () => {
         <Button onClick={handlePrint}>Печать</Button>
       </div>
       <div className="flex gap-2 print:hidden">
-        <Button variant="outline" onClick={handleSave}>
+        <Button ref={btnSaveRef} variant="outline" onClick={handleSave}>
           Сохранить
         </Button>
         <Button variant="outline" onClick={handleOpen}>

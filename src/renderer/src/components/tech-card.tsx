@@ -30,10 +30,13 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
       : 0
   }
 
+  const sum = sumNormTime().toFixed(2)
+
   return (
     <Card
       className={cn('h-fit relative break-inside-avoid print:shadow-none', {
-        'print:hidden': !process[id]
+        'print:hidden': !process[id],
+        'border-destructive border-2': isNaN(sumNormTime())
       })}
     >
       <Button
@@ -61,7 +64,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 print:p-2">
-        <div className="grid grid-cols-[0.3fr_2fr_1fr_1fr_90px] gap-2 justify-items-center px-2 *:font-medium print:grid-cols-[0.3fr_2fr_1fr_1fr]">
+        <div className="grid grid-cols-[0.3fr_3fr_1fr_1fr_70px] gap-1 justify-items-center px-2 *:font-medium text-sm print:grid-cols-[0.3fr_2fr_1fr_1fr]">
           <p>№</p>
           <p>Процесс</p>
           <p>Норма</p>
@@ -84,7 +87,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
             )
           })}
         <AddProcess idParent={id} />
-        <p className="font-medium">Общее время: {sumNormTime().toFixed(2)}</p>
+        <p className="font-medium">Общее время: {sum}</p>
         <p className="hidden print:block">Автор: {author}</p>
       </CardContent>
     </Card>
