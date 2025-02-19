@@ -13,7 +13,7 @@ interface TechCardProps {
 }
 
 export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
-  const { process, changeTitle } = useStore()
+  const { author, process, changeTitle } = useStore()
   const [titleValue, setTitleValue] = useState(title)
 
   const handleDelete = () => {
@@ -82,6 +82,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
           })}
         <AddProcess idParent={id} />
         <p className="font-medium">Общее время: {sumNormTime().toFixed(2)}</p>
+        <p className="hidden print:block">Автор: {author}</p>
       </CardContent>
     </Card>
   )

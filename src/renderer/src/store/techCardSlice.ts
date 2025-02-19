@@ -11,6 +11,7 @@ export interface ITechCardSlice {
 interface ITechCard {
   id: string
   title: string
+  author: string
 }
 
 const initialState: ITechCard[] = []
@@ -18,7 +19,9 @@ const initialState: ITechCard[] = []
 export const techCardSlice: StateCreator<ITechCardSlice, [], [], ITechCardSlice> = (set) => ({
   tech: initialState,
   createTechCard: () =>
-    set((state) => ({ tech: [...state.tech, { id: uuidv4(), title: '', process: [] }] })),
+    set((state) => ({
+      tech: [...state.tech, { id: uuidv4(), title: '', author: '', process: [] }]
+    })),
   deleteTechCard: (id) => set((state) => ({ tech: state.tech.filter((item) => item.id !== id) })),
   changeTitle: (id, title) =>
     set((state) => ({
