@@ -6,6 +6,7 @@ import fs from 'fs'
 import path, { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
+let previewWindow: BrowserWindow | null
 let mainWindow: BrowserWindow
 let savedFilePath = ''
 
@@ -132,15 +133,56 @@ async function handleOpen() {
 }
 
 async function handlePrint() {
-  const win = BrowserWindow.getFocusedWindow()
-  if (!win) return { status: 'error', message: 'Нет активного окна' }
-
-  win.webContents.print({}, (success, error) => {
-    if (!success) return { status: 'error', message: error }
-    return { status: 'success' }
-  })
-  return { status: 'success' }
+  try {
+    mainWindow.webContents.print({ silent: false, printBackground: true })
+    return { success: true, message: 'Печать запущена' }
+  } catch (error) {
+    return { success: false, message: `Ошибка печати: ${(error as Error).message}` }
+  }
 }
+
+ipcMain.handle('print', async () => {
+  try {
+    // Генерируем PDF
+    const pdfData = await mainWindow.webContents.printToPDF({
+      printBackground: true, // Включаем фоновые цвета и изображения
+      margins: {
+        marginType: 'none'
+      }, // 0 - стандартные поля, можно настроить
+      pageSize: 'A4' // Размер страницы
+    })
+
+    // Сохраняем во временную папку
+    const pdfPath = path.join(app.getPath('temp'), 'print_preview.pdf')
+    console.error(pdfPath)
+    fs.writeFileSync(pdfPath, pdfData)
+
+    // Создаем окно для превью (или открываем в системном просмотрщике)
+    if (previewWindow) {
+      previewWindow.close()
+    }
+
+    previewWindow = new BrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    })
+
+    // Загружаем PDF в окно
+    previewWindow.loadURL(`file://${pdfPath}`)
+    previewWindow.on('closed', () => {
+      fs.unlinkSync(pdfPath)
+      previewWindow = null
+    })
+
+    return { success: true, message: 'Превью готово', pdfPath }
+  } catch (error) {
+    return { success: false, message: `Ошибка: ${(error as Error).message}` }
+  }
+})
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
@@ -159,8 +201,6 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-
-  ipcMain.handle('print', async () => handlePrint())
 
   ipcMain.handle('new-file', () => {
     savedFilePath = ''

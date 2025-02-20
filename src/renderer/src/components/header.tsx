@@ -104,9 +104,9 @@ export const Header = () => {
 
   const handlePrint = async () => {
     try {
-      const result = await window.electron.ipcRenderer.invoke('print')
-      console.log(result)
-      if (result.status === 'success') {
+      const { success, message } = await window.api.printPage()
+      console.log(success, message)
+      if (success) {
         toast({
           title: 'Успешно',
           description: 'Страница отправлена на печать.',
@@ -115,7 +115,7 @@ export const Header = () => {
       } else {
         toast({
           title: 'Ошибка',
-          description: `Ошибка при печати: ${result.message}`,
+          description: `Ошибка при печати: ${message}`,
           variant: 'destructive'
         })
       }
