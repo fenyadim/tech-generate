@@ -50,16 +50,38 @@ function createWindow(): void {
       event.preventDefault()
       handleOpen()
     }
-    if (input.control && input.code === 'KeyS') {
-      event.preventDefault()
-      mainWindow.webContents.send('save-click')
-    }
+    // if (input.control && input.code === 'KeyS') {
+    //   event.preventDefault()
+    //   mainWindow.webContents.send('save-click')
+    // }
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+}
+
+async function handleSaveAs({ data, fileName }) {
+  try {
+    const { filePath } = await dialog.showSaveDialog({
+      title: 'Сохранить файл',
+      defaultPath: path.join(app.getPath('documents'), `${fileName}.json`),
+      filters: [{ name: 'JSON Files', extensions: ['json'] }]
+    })
+
+    if (!filePath) return
+
+    savedFilePath = filePath
+
+    fs.writeFileSync(savedFilePath, JSON.stringify(data, null, 2), 'utf-8')
+    mainWindow.webContents.send('file-saved')
+
+    return { success: true, path: savedFilePath }
+  } catch (error) {
+    console.error('Ошибка сохранения файла:', error)
+    return { success: false, error: (error as Error).message }
   }
 }
 
@@ -127,7 +149,8 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.on('save', async (_, data) => handleSave(data))
+  ipcMain.handle('save', async (_, data) => handleSave(data))
+  ipcMain.handle('save-as', async (_, data) => handleSaveAs(data))
 
   ipcMain.handle('open', async () => handleOpen())
 

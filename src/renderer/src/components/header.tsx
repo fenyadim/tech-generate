@@ -25,12 +25,12 @@ export const Header = () => {
     })
 
     window.electron.ipcRenderer.on('file-opened', (__, data) => {
-      const { titleTool, techList, author, filePath } = data
+      const { titleTool, techList, author } = data
       setTitle(titleTool)
       setAuthorStore(author)
       importTechCard(techList.map((item) => _.omit(item, 'process')))
-      console.log(filePath)
       importProccess(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+      console.log(tech)
     })
 
     return () => {
@@ -40,7 +40,7 @@ export const Header = () => {
     }
   }, [])
 
-  const handleSave = async () => {
+  const handleSave = (type: 'save' | 'save-as') => async () => {
     try {
       if (!title) {
         toast({
@@ -69,7 +69,7 @@ export const Header = () => {
         return
       }
 
-      window.electron.ipcRenderer.send('save', {
+      window.electron.ipcRenderer.invoke(type, {
         fileName: title,
         data: {
           titleTool: title,
@@ -162,8 +162,11 @@ export const Header = () => {
         <Button onClick={handlePrint}>Печать</Button>
       </div>
       <div className="flex gap-2 print:hidden">
-        <Button ref={btnSaveRef} variant="outline" onClick={handleSave}>
+        <Button ref={btnSaveRef} variant="outline" onClick={handleSave('save')}>
           Сохранить
+        </Button>
+        <Button variant="outline" onClick={handleSave('save-as')}>
+          Сохранить как
         </Button>
         <Button variant="outline" onClick={handleOpen}>
           Открыть

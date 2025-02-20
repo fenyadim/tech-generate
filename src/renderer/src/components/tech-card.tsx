@@ -2,7 +2,6 @@ import { cn } from '@/shared/lib/utils'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
 import { Trash2 } from 'lucide-react'
-import { useState } from 'react'
 import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
 
@@ -14,14 +13,13 @@ interface TechCardProps {
 
 export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
   const { author, process, changeTitle } = useStore()
-  const [titleValue, setTitleValue] = useState(title)
 
   const handleDelete = () => {
     onDelete(id)
   }
 
-  const onChangeTitle = () => {
-    if (titleValue !== title) changeTitle(id, titleValue)
+  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    changeTitle(id, e.target.value)
   }
 
   const sumNormTime = () => {
@@ -56,9 +54,8 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
           <Input
             id="title"
             className="text-xl print:hidden"
-            value={titleValue}
-            onChange={(e) => setTitleValue(e.target.value)}
-            onBlur={onChangeTitle}
+            value={title}
+            onChange={onChangeTitle}
           />
           <h3 className="font-medium hidden print:block">{title}</h3>
         </CardTitle>
