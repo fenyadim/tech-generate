@@ -25,10 +25,11 @@ export const Header = () => {
     })
 
     window.electron.ipcRenderer.on('file-opened', (__, data) => {
-      const { titleTool, techList, author } = data
+      const { titleTool, techList, author, filePath } = data
       setTitle(titleTool)
       setAuthorStore(author)
       importTechCard(techList.map((item) => _.omit(item, 'process')))
+      console.log(filePath)
       importProccess(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
     })
 
@@ -93,7 +94,8 @@ export const Header = () => {
     }
   }
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
+    window.electron.ipcRenderer.invoke('new-file')
     setTitle('')
     setAuthorStore('')
     importTechCard([])
