@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui'
-import { processStore } from '@/store/processSlice'
+import { processStore } from '@/store/processStore'
 import { Plus } from 'lucide-react'
 import { AddProcessGroup } from './add-process-group'
 

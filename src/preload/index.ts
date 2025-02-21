@@ -3,7 +3,9 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 // Custom APIs for renderer
 const api = {
-  printPage: () => ipcRenderer.invoke('print')
+  printPage: () => ipcRenderer.invoke('print'),
+  saveFile: (mode, data) => ipcRenderer.invoke(mode, data),
+  openFile: () => ipcRenderer.invoke('open')
 }
 
 if (process.contextIsolated) {

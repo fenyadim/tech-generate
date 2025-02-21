@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
-import { IProcessItem, processStore } from '@/store/processSlice'
+import { IProcessItem, processStore } from '@/store/processStore'
 import { ArrowDown, ArrowUp, X } from 'lucide-react'
 import { AddDescriptionButton } from './add-description-button'
 import { FieldInput } from './field-input'

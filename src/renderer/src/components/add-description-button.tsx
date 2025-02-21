@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui'
-import { processStore } from '@/store/processSlice'
+import { processStore } from '@/store/processStore'
 import { ListPlus } from 'lucide-react'
 import { useEffect } from 'react'
 

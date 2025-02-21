@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Input } from '@/shared/ui'
-import { FieldType, processStore } from '@/store/processSlice'
+import { FieldType, processStore } from '@/store/processStore'
 import { ComponentProps } from 'react'
 
 interface FieldInputProps<T> extends ComponentProps<'input'> {

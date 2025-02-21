@@ -1,15 +1,17 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
 interface HandlersApi {
-  saveFile: (data: { data: T; filePath: string | null }) => Promise<{
+  saveFile: (
+    mode: 'save' | 'save-as',
+    data: { data: T; filePath: string | null; fileName: string }
+  ) => Promise<{
     success: boolean
     message: string
-    filePath: string | null
+    filePath: string
   }>
-  openFile: (data: { filePath: string | null }) => Promise<{
+  openFile: () => Promise<{
     success: boolean
     message: string
-    filePath: string | null
     data: T | null
   }>
   printPage: () => Promise<{ success: boolean; message: string }>

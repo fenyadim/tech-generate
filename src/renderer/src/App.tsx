@@ -3,19 +3,17 @@ import { Header } from './components/header'
 import { TechCard } from './components/tech-card'
 import { Button } from './shared/ui'
 import { halfArray } from './shared/utils/halfArray'
-import { techCardStore } from './store/techCardSlice'
+import { techCardStore } from './store/techCardStore'
 
 function App(): JSX.Element {
   const tech = techCardStore.use()
 
-  console.log(tech)
-
   const handleCreate = () => {
-    techCardStore.create()
+    techCardStore.createCard()
   }
 
   const handleDelete = (id: string) => {
-    techCardStore.remove(id)
+    techCardStore.deleteCard(id)
   }
 
   return (

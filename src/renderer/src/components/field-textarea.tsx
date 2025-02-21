@@ -1,5 +1,5 @@
 import { Textarea } from '@/shared/ui'
-import { processStore } from '@/store/processSlice'
+import { processStore } from '@/store/processStore'
 import { ComponentProps } from 'react'
 
 interface FieldTextareaProps<T> extends ComponentProps<'textarea'> {
