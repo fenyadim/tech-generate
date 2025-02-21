@@ -1,6 +1,7 @@
 import { cn } from '@/shared/lib/utils'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
+import { processStore } from '@/store/processSlice'
 import { Trash2 } from 'lucide-react'
 import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
@@ -12,7 +13,9 @@ interface TechCardProps {
 }
 
 export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
-  const { author, process, changeTitle } = useStore()
+  const { author, changeTitle } = useStore()
+
+  const process = processStore.use()
 
   const handleDelete = () => {
     onDelete(id)

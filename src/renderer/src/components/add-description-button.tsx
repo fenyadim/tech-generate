@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui'
-import { useStore } from '@/store'
+import { processStore } from '@/store/processSlice'
 import { ListPlus } from 'lucide-react'
 import { useEffect } from 'react'
 
@@ -9,14 +9,12 @@ interface AddDescriptionButtonProps {
 }
 
 export const AddDescriptionButton = ({ id, idParent }: AddDescriptionButtonProps) => {
-  const { changeText } = useStore()
-
   useEffect(() => {
-    changeText(id, '', 'description', idParent)
+    processStore.changeText(id, '', 'description', idParent)
   }, [])
 
   const handleClick = () => {
-    changeText(id, '1.', 'description', idParent)
+    processStore.changeText(id, '1.', 'description', idParent)
   }
 
   return (

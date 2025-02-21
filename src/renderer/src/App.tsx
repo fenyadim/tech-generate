@@ -3,17 +3,19 @@ import { Header } from './components/header'
 import { TechCard } from './components/tech-card'
 import { Button } from './shared/ui'
 import { halfArray } from './shared/utils/halfArray'
-import { useStore } from './store'
+import { techCardStore } from './store/techCardSlice'
 
 function App(): JSX.Element {
-  const { tech, createTechCard, deleteTechCard } = useStore()
+  const tech = techCardStore.use()
 
-  const handleClick = () => {
-    createTechCard()
+  console.log(tech)
+
+  const handleCreate = () => {
+    techCardStore.create()
   }
 
   const handleDelete = (id: string) => {
-    deleteTechCard(id)
+    techCardStore.remove(id)
   }
 
   return (
@@ -23,7 +25,7 @@ function App(): JSX.Element {
         {tech.map(({ title, id }) => (
           <TechCard id={String(id)} title={title} key={id} onDelete={handleDelete} />
         ))}
-        <Button variant="outline" className="h-auto print:hidden" onClick={handleClick}>
+        <Button variant="outline" className="h-auto print:hidden" onClick={handleCreate}>
           <Plus />
         </Button>
       </div>

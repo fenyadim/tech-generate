@@ -51,10 +51,10 @@ function createWindow(): void {
       event.preventDefault()
       handleOpen()
     }
-    // if (input.control && input.code === 'KeyS') {
-    //   event.preventDefault()
-    //   mainWindow.webContents.send('save-click')
-    // }
+    if (input.control && input.code === 'KeyS') {
+      event.preventDefault()
+      mainWindow.webContents.send('save-click')
+    }
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {

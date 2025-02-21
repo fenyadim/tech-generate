@@ -1,5 +1,6 @@
+import { store } from '@davstack/store'
 import { v4 as uuidv4 } from 'uuid'
-import { StateCreator } from 'zustand'
+import { IProcessItem } from './processSlice'
 
 export interface ITechCardSlice {
   tech: ITechCard[]
@@ -12,20 +13,20 @@ interface ITechCard {
   id: string
   title: string
   author: string
+  process: IProcessItem[]
 }
 
 const initialState: ITechCard[] = []
 
-export const techCardSlice: StateCreator<ITechCardSlice, [], [], ITechCardSlice> = (set) => ({
-  tech: initialState,
-  createTechCard: () =>
-    set((state) => ({
-      tech: [...state.tech, { id: uuidv4(), title: '', author: '', process: [] }]
-    })),
-  deleteTechCard: (id) => set((state) => ({ tech: state.tech.filter((item) => item.id !== id) })),
-  changeTitle: (id, title) =>
-    set((state) => ({
-      tech: state.tech.map((item) => (item.id === id ? { ...item, title } : item))
-    })),
-  importTechCard: (data) => set(() => ({ tech: data }))
-})
+export const techCardStore = store(initialState).extend((store) => ({
+  create: () => {
+    console.log('create')
+    store.set((draft) => draft.push({ id: uuidv4(), title: '', author: '', process: [] }))
+  },
+  remove: (id: string) => {
+    store.set((draft) => {
+      const index = draft.findIndex((item) => item.id === id)
+      if (index !== -1) draft.splice(index, 1)
+    })
+  }
+}))

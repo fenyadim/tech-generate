@@ -1,13 +1,17 @@
 import { useToast } from '@/shared/hooks/use-toast'
 import { Button, Input, Label } from '@/shared/ui'
 import { useStore } from '@/store'
+import { processStore } from '@/store/processSlice'
+import { techCardStore } from '@/store/techCardSlice'
 import _ from 'lodash'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const Header = () => {
-  const { author, setAuthorStore, tech, process, importTechCard, importProccess } = useStore()
+  const { author, setAuthorStore } = useStore()
   const [title, setTitle] = useState('')
   const { toast } = useToast()
+
+  const tech = techCardStore.use()
 
   const btnSaveRef = useRef<HTMLButtonElement>(null)
 
@@ -21,6 +25,7 @@ export const Header = () => {
     })
 
     window.electron.ipcRenderer.on('save-click', () => {
+      btnSaveRef.current?.focus()
       btnSaveRef.current?.click()
     })
 
@@ -28,9 +33,8 @@ export const Header = () => {
       const { titleTool, techList, author } = data
       setTitle(titleTool)
       setAuthorStore(author)
-      importTechCard(techList.map((item) => _.omit(item, 'process')))
-      importProccess(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
-      console.log(tech)
+      techCardStore.set(techList.map((item) => _.omit(item, 'process')))
+      processStore.set(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
     })
 
     return () => {
@@ -98,8 +102,8 @@ export const Header = () => {
     window.electron.ipcRenderer.invoke('new-file')
     setTitle('')
     setAuthorStore('')
-    importTechCard([])
-    importProccess({})
+    techCardStore.set([])
+    processStore.set({})
   }
 
   const handlePrint = async () => {

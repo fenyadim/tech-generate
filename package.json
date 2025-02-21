@@ -37,6 +37,7 @@
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
+    "@davstack/store": "^1.4.6",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@radix-ui/react-dialog": "^1.1.6",
@@ -52,8 +53,8 @@
     "lucide-react": "^0.475.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^11.0.5",
-    "zustand": "^5.0.3"
+    "use-sync-external-store": "^1.4.0",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
