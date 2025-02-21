@@ -22,7 +22,7 @@ export const FieldTextarea = <T extends string | number>({
   return (
     <Textarea
       {...props}
-      className="rounded-none border-border shadow-none rounded-b-lg print:border-t-0 [field-sizing:content] resize-none"
+      className="rounded-none border-border shadow-none rounded-b-lg print:border-t-0 [field-sizing:content] resize-none print:py-1 print:text-sm"
       value={initialValue}
       onChange={onChange}
     />

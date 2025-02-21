@@ -47,7 +47,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
       >
         <Trash2 className="text-red-600" />
       </Button>
-      <CardHeader className="print:p-2">
+      <CardHeader className="print:p-2 print:pb-0">
         <CardTitle>
           <Label className="print:hidden" htmlFor="title">
             Название и номер детали

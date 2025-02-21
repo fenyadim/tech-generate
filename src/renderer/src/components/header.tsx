@@ -12,7 +12,6 @@ export const Header = () => {
   const title = fileStore.title.use()
 
   const handleCreate = async () => {
-    window.electron.ipcRenderer.invoke('new-file')
     fileStore.assign({ title: '', author: '', path: '' })
     techCardStore.set([])
     processStore.set({})

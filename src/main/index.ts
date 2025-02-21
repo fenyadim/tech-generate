@@ -204,11 +204,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
-  // ipcMain.handle('new-file', () => {
-  //   savedFilePath = ''
-  //   console.log(savedFilePath)
-  // })
-
   log.info('Проверка обновлений...')
   autoUpdater.checkForUpdatesAndNotify()
 })
