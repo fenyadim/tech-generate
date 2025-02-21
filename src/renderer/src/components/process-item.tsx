@@ -1,7 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
-import { useStore } from '@/store'
-import { IProcessItem } from '@/store/processSlice'
+import { IProcessItem, processStore } from '@/store/processStore'
 import { ArrowDown, ArrowUp, X } from 'lucide-react'
 import { AddDescriptionButton } from './add-description-button'
 import { FieldInput } from './field-input'
@@ -23,18 +22,16 @@ export const ProcessItem = ({
   category = 0,
   length
 }: ProcessItemProps) => {
-  const { removeProcess, moveProcessDown, moveProcessUp } = useStore()
-
   const handleDeleteItem = () => {
-    removeProcess(id, parentId)
+    processStore.remove(id, parentId)
   }
 
   const handleMoveDown = () => {
-    moveProcessDown(pos - 1, parentId)
+    processStore.moveDown(pos - 1, parentId)
   }
 
   const handleMoveUp = () => {
-    moveProcessUp(pos - 1, parentId)
+    processStore.moveUp(pos - 1, parentId)
   }
 
   return (

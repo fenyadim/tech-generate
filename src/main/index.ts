@@ -8,7 +8,6 @@ import icon from '../../resources/icon.png?asset'
 
 let previewWindow: BrowserWindow | null
 let mainWindow: BrowserWindow
-let savedFilePath = ''
 
 log.transports.file.level = 'info'
 autoUpdater.logger = log
@@ -51,10 +50,10 @@ function createWindow(): void {
       event.preventDefault()
       handleOpen()
     }
-    // if (input.control && input.code === 'KeyS') {
-    //   event.preventDefault()
-    //   mainWindow.webContents.send('save-click')
-    // }
+    if (input.control && input.code === 'KeyS') {
+      event.preventDefault()
+      mainWindow.webContents.send('save-click')
+    }
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -64,7 +63,7 @@ function createWindow(): void {
   }
 }
 
-async function handleSaveAs({ data, fileName }) {
+async function handleSaveAs({ data, fileName, filePath: savedFilePath }) {
   try {
     const { filePath } = await dialog.showSaveDialog({
       title: 'Сохранить файл',
@@ -76,17 +75,21 @@ async function handleSaveAs({ data, fileName }) {
 
     savedFilePath = filePath
 
-    fs.writeFileSync(savedFilePath, JSON.stringify(data, null, 2), 'utf-8')
+    fs.writeFileSync(
+      savedFilePath,
+      JSON.stringify({ ...data, path: savedFilePath }, null, 2),
+      'utf-8'
+    )
     mainWindow.webContents.send('file-saved')
 
-    return { success: true, path: savedFilePath }
+    return { success: true, message: 'Файл успешно сохранен', filePath: savedFilePath }
   } catch (error) {
     console.error('Ошибка сохранения файла:', error)
-    return { success: false, error: (error as Error).message }
+    return { success: false, message: `Ошибка: ${(error as Error).message}`, filePath: null }
   }
 }
 
-async function handleSave({ data, fileName }) {
+async function handleSave({ data, fileName, filePath: savedFilePath }) {
   try {
     if (!savedFilePath) {
       const { filePath } = await dialog.showSaveDialog({
@@ -99,13 +102,16 @@ async function handleSave({ data, fileName }) {
       savedFilePath = filePath
     }
 
-    fs.writeFileSync(savedFilePath, JSON.stringify(data, null, 2), 'utf-8')
+    fs.writeFileSync(
+      savedFilePath,
+      JSON.stringify({ ...data, path: savedFilePath }, null, 2),
+      'utf-8'
+    )
     mainWindow.webContents.send('file-saved')
 
-    return { success: true, path: savedFilePath }
+    return { success: true, message: 'Файл успешно сохранен', filePath: savedFilePath }
   } catch (error) {
-    console.error('Ошибка сохранения файла:', error)
-    return { success: false, error: (error as Error).message }
+    return { success: false, message: `Ошибка: ${(error as Error).message}`, filePath: null }
   }
 }
 
@@ -125,8 +131,7 @@ async function handleOpen() {
     const data = fs.readFileSync(filePath, 'utf-8')
     const parsedData = JSON.parse(data)
     mainWindow.webContents.send('file-opened', parsedData)
-    savedFilePath = filePath
-    return { status: 'success', filePath, data: parsedData }
+    return { status: 'success', data: parsedData }
   } catch (error) {
     return { status: 'error', message: 'Не удалось прочитать файл.' }
   }
@@ -143,21 +148,18 @@ async function handlePrint() {
 
 ipcMain.handle('print', async () => {
   try {
-    // Генерируем PDF
     const pdfData = await mainWindow.webContents.printToPDF({
-      printBackground: true, // Включаем фоновые цвета и изображения
+      printBackground: true,
       margins: {
         marginType: 'none'
-      }, // 0 - стандартные поля, можно настроить
-      pageSize: 'A4' // Размер страницы
+      },
+      pageSize: 'A4'
     })
 
-    // Сохраняем во временную папку
     const pdfPath = path.join(app.getPath('temp'), 'print_preview.pdf')
     console.error(pdfPath)
     fs.writeFileSync(pdfPath, pdfData)
 
-    // Создаем окно для превью (или открываем в системном просмотрщике)
     if (previewWindow) {
       previewWindow.close()
     }
@@ -171,7 +173,6 @@ ipcMain.handle('print', async () => {
       }
     })
 
-    // Загружаем PDF в окно
     previewWindow.loadURL(`file://${pdfPath}`)
     previewWindow.on('closed', () => {
       fs.unlinkSync(pdfPath)
@@ -184,6 +185,12 @@ ipcMain.handle('print', async () => {
   }
 })
 
+ipcMain.handle('save', async (_, data) => handleSave(data))
+
+ipcMain.handle('save-as', async (_, data) => handleSaveAs(data))
+
+ipcMain.handle('open', async () => handleOpen())
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -191,21 +198,16 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.handle('save', async (_, data) => handleSave(data))
-  ipcMain.handle('save-as', async (_, data) => handleSaveAs(data))
-
-  ipcMain.handle('open', async () => handleOpen())
-
   createWindow()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
-  ipcMain.handle('new-file', () => {
-    savedFilePath = ''
-    console.log(savedFilePath)
-  })
+  // ipcMain.handle('new-file', () => {
+  //   savedFilePath = ''
+  //   console.log(savedFilePath)
+  // })
 
   log.info('Проверка обновлений...')
   autoUpdater.checkForUpdatesAndNotify()

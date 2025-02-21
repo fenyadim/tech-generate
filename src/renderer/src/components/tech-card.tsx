@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
-import { useStore } from '@/store'
+import { fileStore, processStore, techCardStore } from '@/store'
 import { Trash2 } from 'lucide-react'
 import { AddProcess } from './add-process'
 import { ProcessItem } from './process-item'
@@ -12,14 +12,15 @@ interface TechCardProps {
 }
 
 export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
-  const { author, process, changeTitle } = useStore()
+  const process = processStore.use()
+  const author = fileStore.author.use()
 
   const handleDelete = () => {
     onDelete(id)
   }
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    changeTitle(id, e.target.value)
+    techCardStore.changeTitle(id, e.target.value)
   }
 
   const sumNormTime = () => {

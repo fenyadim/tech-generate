@@ -1,5 +1,5 @@
 import { Textarea } from '@/shared/ui'
-import { useStore } from '@/store'
+import { processStore } from '@/store/processStore'
 import { ComponentProps } from 'react'
 
 interface FieldTextareaProps<T> extends ComponentProps<'textarea'> {
@@ -14,11 +14,9 @@ export const FieldTextarea = <T extends string | number>({
   idParent,
   ...props
 }: FieldTextareaProps<T>) => {
-  const { changeText } = useStore()
-
   //TODO: Добавить debounce
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    changeText(idProcess, e.target.value as T, 'description', idParent)
+    processStore.changeText(idProcess, e.target.value, 'description', idParent)
   }
 
   return (

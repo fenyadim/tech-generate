@@ -1,7 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Input } from '@/shared/ui'
-import { useStore } from '@/store'
-import { FieldType } from '@/store/processSlice'
+import { FieldType, processStore } from '@/store/processStore'
 import { ComponentProps } from 'react'
 
 interface FieldInputProps<T> extends ComponentProps<'input'> {
@@ -18,8 +17,6 @@ export const FieldInput = <T extends string | number>({
   idParent,
   ...props
 }: FieldInputProps<T>) => {
-  const { changeText } = useStore()
-
   //TODO: Добавить debounce
   // const debounced = debounce(
   //   (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -27,8 +24,9 @@ export const FieldInput = <T extends string | number>({
   //   500
   // )
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    changeText(idProcess, e.target.value as T, fieldName, idParent)
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processStore.changeText(idProcess, e.target.value, fieldName, idParent)
+  }
 
   return (
     <Input

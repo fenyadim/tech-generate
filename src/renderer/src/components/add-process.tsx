@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui'
-import { useStore } from '@/store'
+import { processStore } from '@/store/processStore'
 import { Plus } from 'lucide-react'
 import { AddProcessGroup } from './add-process-group'
 
@@ -22,10 +22,8 @@ interface AddProcessProps {
 }
 
 export const AddProcess = ({ idParent }: AddProcessProps) => {
-  const { addProcess } = useStore()
-
   const handleAdd = (title: string) => {
-    addProcess(title, idParent)
+    processStore.add(title, idParent)
   }
 
   return (
