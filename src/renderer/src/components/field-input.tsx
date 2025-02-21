@@ -32,7 +32,7 @@ export const FieldInput = <T extends string | number>({
     <Input
       {...props}
       className={cn(
-        'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none p-1',
+        'border-none shadow-none rounded-none z-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none p-1 print:py-1 print:h-min print:text-sm',
         {
           'print:hidden':
             typeof initialValue === 'number' ? initialValue === 0 : initialValue === ''

@@ -95,7 +95,7 @@ export const ProcessItem = ({
         </div>
       </div>
       <div
-        className={cn('hidden border print:block p-2', {
+        className={cn('hidden border print:block p-2 print:py-1', {
           'rounded-b-lg border-b': description === ''
         })}
       >

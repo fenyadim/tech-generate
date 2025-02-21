@@ -10,9 +10,9 @@ import { processStore } from '@/store/processStore'
 import { Plus } from 'lucide-react'
 import { AddProcessGroup } from './add-process-group'
 
-const blankProcess = ['Отрезная', 'Шлифовка', 'Слесарная']
-const bladeProcess = ['Фрезерная', 'Токарная', 'Расточка', 'Фрезерная ЧПУ']
-const gridingProcess = ['Кр.шлифовка', 'Проф.шлифовка', 'Оптика', 'Внутр.шлиф.', 'Xаузер']
+const blankProcess = ['Отрезная', 'Шлифовка', 'Слесарная', 'Заготовка']
+const bladeProcess = ['Фрезерная', 'Токарная', 'Коорд.раст.', 'Фрезерная ЧПУ']
+const gridingProcess = ['Кр.шлифовка', 'Пл.шлифовка', 'Оптика', 'Внутр.шлиф.', 'Xаузер']
 const thermalProcess = ['Отжиг', 'Т.О']
 const erosiveProcess = ['Эл.эрозия', 'Прошивка']
 const controlProcess = ['Контроль']

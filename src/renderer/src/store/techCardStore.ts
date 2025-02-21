@@ -23,7 +23,6 @@ export const techCardStore = store(initialState).extend((store) => ({
       draft.push({ id: uuidv4(), title: '', process: [] })
     }),
   deleteCard: (id: string) => {
-    console.log(store.get())
     store.set((draft) => {
       const index = draft.findIndex((item) => item.id === id)
       if (index !== -1) draft.splice(index, 1)
