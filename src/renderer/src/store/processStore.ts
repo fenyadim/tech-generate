@@ -45,6 +45,9 @@ export const processStore = store(initialState).extend((store) => ({
       if (index !== -1) draft.splice(index, 1)
     })
   },
+  copyProcess: (items: IProcessItem[], idTechCard: string) => {
+    store.assign({ [idTechCard]: items })
+  },
   moveDown: (pos: number, idTechCard: string) => {
     moveProcess(store, pos, idTechCard, 'down')
   },

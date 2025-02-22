@@ -3,6 +3,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '
 import { fileStore, processStore, techCardStore } from '@/store'
 import { Trash2 } from 'lucide-react'
 import { AddProcess } from './add-process'
+import { CopyButton } from './copy-button'
 import { ProcessItem } from './process-item'
 
 interface TechCardProps {
@@ -38,15 +39,12 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
         'border-destructive border-2': isNaN(sumNormTime())
       })}
     >
-      <Button
-        className="absolute top-1 right-1 print:hidden"
-        title="Удалить"
-        variant="ghost"
-        size="icon"
-        onClick={handleDelete}
-      >
-        <Trash2 className="text-red-600" />
-      </Button>
+      <div className="absolute top-1 right-1 print:hidden">
+        <CopyButton idCard={id} />
+        <Button title="Удалить" variant="ghost" size="icon" onClick={handleDelete}>
+          <Trash2 className="text-red-600" />
+        </Button>
+      </div>
       <CardHeader className="print:p-2 print:pb-0">
         <CardTitle>
           <Label className="print:hidden" htmlFor="title">
