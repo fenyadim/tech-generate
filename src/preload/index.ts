@@ -1,11 +1,14 @@
 import { electronAPI } from '@electron-toolkit/preload'
 import { contextBridge, ipcRenderer } from 'electron'
+import { HandlersApi } from './types'
 
 // Custom APIs for renderer
-const api = {
+const api: HandlersApi = {
   printPage: () => ipcRenderer.invoke('print'),
   saveFile: (mode, data) => ipcRenderer.invoke(mode, data),
-  openFile: () => ipcRenderer.invoke('open')
+  openFile: () => ipcRenderer.invoke('open'),
+  updateProgress: (cb) => ipcRenderer.on('progress', (_, precent) => cb(precent)),
+  onUpdateStatus: (cb) => ipcRenderer.on('update-status', (_, status) => cb(status))
 }
 
 if (process.contextIsolated) {
