@@ -7,7 +7,7 @@ const api: HandlersApi = {
   printPage: () => ipcRenderer.invoke('print'),
   saveFile: (mode, data) => ipcRenderer.invoke(mode, data),
   openFile: () => ipcRenderer.invoke('open'),
-  updateProgress: (cb) => ipcRenderer.on('progress', (_, precent) => cb(precent)),
+  updateProgress: (cb) => ipcRenderer.on('update-progress', (_, precent) => cb(precent)),
   updateStatus: (cb) => ipcRenderer.on('update-status', (_, status) => cb(status))
 }
 
