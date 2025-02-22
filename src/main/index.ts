@@ -221,21 +221,20 @@ autoUpdater.on('update-available', (info) => {
     title: 'Обновление доступно',
     message: 'Доступна новая версия. Загрузка...'
   })
+  mainWindow.webContents.send('update-status', { status: 'update-start' })
 })
 
 autoUpdater.on('update-not-available', () => {
   log.info('Обновления нет.')
 })
 
-autoUpdater.on('download-progress', () => {
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Загрузка обновления',
-    message: `Идет загрузка обновления. Подождите...`
-  })
+autoUpdater.on('download-progress', (info) => {
+  const percent = info.percent.toFixed(1)
+  mainWindow.webContents.send('update-progress', { percent })
 })
 
 autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update-status', { status: 'update-end' })
   dialog
     .showMessageBox({
       type: 'info',
