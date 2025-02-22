@@ -157,7 +157,6 @@ ipcMain.handle('print', async () => {
     })
 
     const pdfPath = path.join(app.getPath('temp'), 'print_preview.pdf')
-    console.error(pdfPath)
     fs.writeFileSync(pdfPath, pdfData)
 
     if (previewWindow) {
