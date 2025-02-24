@@ -1,7 +1,7 @@
 import { store, StoreApi } from '@davstack/store'
 import { v4 as uuidv4 } from 'uuid'
 
-interface IProccess {
+export interface IProccess {
   [idTechCard: string]: IProcessItem[]
 }
 
