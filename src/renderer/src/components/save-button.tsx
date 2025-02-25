@@ -68,7 +68,11 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
         data: {
           titleTool: title,
           author,
-          techList: tech.map((item) => ({ ...item, process: process[item.id] }))
+          techList: tech.map((item) => ({
+            ...item,
+            process: process[item.id],
+            count: item.count ?? 1
+          }))
         },
         filePath: fileStore.path.get(),
         fileName: title

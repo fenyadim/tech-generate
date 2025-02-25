@@ -2,10 +2,11 @@ import { store } from '@davstack/store'
 import { v4 as uuidv4 } from 'uuid'
 import { IProcessItem } from './processStore'
 
-interface ITechCard {
+export interface ITechCard {
   id: string
   title: string
   process: IProcessItem[]
+  count: number
 }
 
 const initialState: ITechCard[] = []
@@ -13,7 +14,7 @@ const initialState: ITechCard[] = []
 export const techCardStore = store(initialState).extend((store) => ({
   createCard: () =>
     store.set((draft) => {
-      draft.push({ id: uuidv4(), title: '', process: [] })
+      draft.push({ id: uuidv4(), title: '', process: [], count: 1 })
     }),
   deleteCard: (id: string) => {
     store.set((draft) => {
@@ -31,6 +32,18 @@ export const techCardStore = store(initialState).extend((store) => ({
     store.set((draft) => {
       const index = draft.findIndex((item) => item.id === id)
       if (index !== -1) draft[index].title = title
+    })
+  },
+  incrementCount: (id: string) => {
+    store.set((draft) => {
+      const index = draft.findIndex((item) => item.id === id)
+      if (index !== -1) draft[index].count += 1
+    })
+  },
+  decrementCount: (id: string) => {
+    store.set((draft) => {
+      const index = draft.findIndex((item) => item.id === id)
+      if (index !== -1) draft[index].count -= 1
     })
   }
 }))

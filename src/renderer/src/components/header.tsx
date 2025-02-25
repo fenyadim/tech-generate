@@ -11,7 +11,7 @@ import { SaveButton } from './save-button'
 export const Header = () => {
   const author = fileStore.author.use()
   const title = fileStore.title.use()
-  const sumTime = totalSum(processStore.use())
+  const sumTime = totalSum(processStore.use(), techCardStore.use())
 
   const handleCreate = async () => {
     fileStore.assign({ title: '', author: '', path: '' })

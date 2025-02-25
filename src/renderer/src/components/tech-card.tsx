@@ -4,15 +4,17 @@ import { fileStore, processStore, techCardStore } from '@/store'
 import { Trash2 } from 'lucide-react'
 import { AddProcess } from './add-process'
 import { CopyButton } from './copy-button'
+import { CountElement } from './count-element'
 import { ProcessItem } from './process-item'
 
 interface TechCardProps {
-  title: string
   id: string
+  title: string
+  count: number
   onDelete: (id: string) => void
 }
 
-export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
+export const TechCard = ({ id, title = '', count = 1, onDelete }: TechCardProps) => {
   const process = processStore.use()
   const author = fileStore.author.use()
 
@@ -30,7 +32,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
       : 0
   }
 
-  const sum = sumNormTime().toFixed(2)
+  const sum = (sumNormTime() * count).toFixed(2)
 
   return (
     <Card
@@ -84,6 +86,7 @@ export const TechCard = ({ id, title = '', onDelete }: TechCardProps) => {
           })}
         <AddProcess idParent={id} />
         <p className="font-medium">Общее время: {sum}</p>
+        <CountElement id={id} count={count} />
         <p className="hidden print:block">Автор: {author}</p>
       </CardContent>
     </Card>
