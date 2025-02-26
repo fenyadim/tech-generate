@@ -10,10 +10,10 @@ interface SaveButtonProps {
 export const SaveButton = ({ mode }: SaveButtonProps) => {
   const btnSaveRef = useRef<HTMLButtonElement>(null)
 
-  const author = fileStore.author.use()
-  const title = fileStore.title.use()
-  const tech = techCardStore.use()
-  const process = processStore.use()
+  const author = fileStore.author.get()
+  const title = fileStore.title.get()
+  const tech = techCardStore.get()
+  const process = processStore.get()
 
   useEffect(() => {
     window.electron.ipcRenderer.on('file-saved', () => {
@@ -24,7 +24,7 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
       })
     })
 
-    window.electron.ipcRenderer.on('save-click', () => {
+    window.api.saveClick(() => {
       btnSaveRef.current?.focus()
       btnSaveRef.current?.click()
     })

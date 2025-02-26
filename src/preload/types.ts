@@ -15,4 +15,5 @@ export interface HandlersApi {
   printPage: () => Promise<{ success: boolean; message: string }>
   updateProgress: (cb: (precent: string) => void) => void
   updateStatus: (cb: (status: 'update-start' | 'update-end') => void) => void
+  saveClick: (cb: () => void) => void
 }
