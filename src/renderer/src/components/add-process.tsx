@@ -8,6 +8,7 @@ import {
 } from '@/shared/ui'
 import { processStore } from '@/store/processStore'
 import { Plus } from 'lucide-react'
+import { memo } from 'react'
 import { AddProcessGroup } from './add-process-group'
 
 const blankProcess = ['Отрезная', 'Шлифовка', 'Слесарная', 'Заготовка']
@@ -21,7 +22,7 @@ interface AddProcessProps {
   idParent: string
 }
 
-export const AddProcess = ({ idParent }: AddProcessProps) => {
+const AddProcessMemo = ({ idParent }: AddProcessProps) => {
   const handleAdd = (title: string) => {
     processStore.add(title, idParent)
   }
@@ -47,3 +48,5 @@ export const AddProcess = ({ idParent }: AddProcessProps) => {
     </Dialog>
   )
 }
+
+export const AddProcess = memo(AddProcessMemo)

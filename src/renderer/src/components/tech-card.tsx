@@ -1,35 +1,28 @@
 import { cn } from '@/shared/lib/utils'
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
-import { fileStore, processStore, techCardStore } from '@/store'
-import { Trash2 } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui'
+import { fileStore, processStore } from '@/store'
+import { memo } from 'react'
 import { AddProcess } from './add-process'
 import { CopyButton } from './copy-button'
 import { CountElement } from './count-element'
+import { DeleteCardButton } from './delete-card-button'
 import { ProcessItem } from './process-item'
+import { TitleInput } from './title-input'
 
 interface TechCardProps {
   id: string
   title: string
   count: number
-  onDelete: (id: string) => void
 }
 
-export const TechCard = ({ id, title = '', count = 1, onDelete }: TechCardProps) => {
-  const process = processStore.use()
+const TechCardMemo = ({ id, count = 1 }: TechCardProps) => {
+  const process = processStore.use((item) => {
+    return item[id]
+  })
   const author = fileStore.author.use()
 
-  const handleDelete = () => {
-    onDelete(id)
-  }
-
-  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    techCardStore.changeTitle(id, e.target.value)
-  }
-
   const sumNormTime = () => {
-    return process[id]
-      ? process[id].reduce((acc, item) => acc + (item.time ? Number(item.time) : 0), 0)
-      : 0
+    return process ? process.reduce((acc, item) => acc + (item.time ? Number(item.time) : 0), 0) : 0
   }
 
   const sum = (sumNormTime() * count).toFixed(2)
@@ -37,28 +30,17 @@ export const TechCard = ({ id, title = '', count = 1, onDelete }: TechCardProps)
   return (
     <Card
       className={cn('h-fit relative break-inside-avoid print:shadow-none', {
-        'print:hidden': !process[id],
+        'print:hidden': !process,
         'border-destructive border-2': isNaN(sumNormTime())
       })}
     >
       <div className="absolute top-1 right-1 print:hidden">
         <CopyButton idCard={id} />
-        <Button title="Удалить" variant="ghost" size="icon" onClick={handleDelete}>
-          <Trash2 className="text-red-600" />
-        </Button>
+        <DeleteCardButton id={id} />
       </div>
       <CardHeader className="print:p-2 print:pb-0">
         <CardTitle>
-          <Label className="print:hidden" htmlFor="title">
-            Название и номер детали
-          </Label>
-          <Input
-            id="title"
-            className="text-xl print:hidden"
-            value={title}
-            onChange={onChangeTitle}
-          />
-          <h3 className="font-medium hidden print:block">{title}</h3>
+          <TitleInput id={id} />
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 print:p-2">
@@ -68,8 +50,8 @@ export const TechCard = ({ id, title = '', count = 1, onDelete }: TechCardProps)
           <p>Норма</p>
           <p>Разряд</p>
         </div>
-        {!!process[id] &&
-          process[id].map(({ id: processId, title, category, description, time }, index) => {
+        {process &&
+          process.map(({ id: processId, title, category, description, time }, index) => {
             return (
               <ProcessItem
                 key={processId}
@@ -92,3 +74,5 @@ export const TechCard = ({ id, title = '', count = 1, onDelete }: TechCardProps)
     </Card>
   )
 }
+
+export const TechCard = memo(TechCardMemo)

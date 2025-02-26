@@ -8,7 +8,11 @@ const api: HandlersApi = {
   saveFile: (mode, data) => ipcRenderer.invoke(mode, data),
   openFile: () => ipcRenderer.invoke('open'),
   updateProgress: (cb) => ipcRenderer.on('update-progress', (_, precent) => cb(precent)),
-  updateStatus: (cb) => ipcRenderer.on('update-status', (_, status) => cb(status))
+  updateStatus: (cb) => ipcRenderer.on('update-status', (_, status) => cb(status)),
+  saveClick: (cb) => ipcRenderer.on('save-click', () => cb()),
+  fileOpened: (cb) => ipcRenderer.on('file-opened', (_, data) => cb(data)),
+  fileSaved: (cb) => ipcRenderer.on('file-saved', () => cb()),
+  removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
 }
 
 if (process.contextIsolated) {

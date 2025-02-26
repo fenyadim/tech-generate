@@ -2,9 +2,9 @@ import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
 import { IProcessItem, processStore } from '@/store/processStore'
 import { ArrowDown, ArrowUp, X } from 'lucide-react'
+import { memo } from 'react'
 import { AddDescriptionButton } from './add-description-button'
 import { FieldInput } from './field-input'
-import { FieldTextarea } from './field-textarea'
 
 interface ProcessItemProps extends IProcessItem {
   parentId: string
@@ -12,7 +12,7 @@ interface ProcessItemProps extends IProcessItem {
   length: number
 }
 
-export const ProcessItem = ({
+const ProcessItemMemo = ({
   id,
   parentId,
   pos,
@@ -101,11 +101,9 @@ export const ProcessItem = ({
       >
         <p className="font-medium opacity-50">Исполнитель</p>
       </div>
-      {description === '' ? (
-        <AddDescriptionButton id={id} idParent={parentId} />
-      ) : (
-        <FieldTextarea idParent={parentId} idProcess={id} initialValue={description} />
-      )}
+      <AddDescriptionButton id={id} idParent={parentId} description={description} />
     </div>
   )
 }
+
+export const ProcessItem = memo(ProcessItemMemo)

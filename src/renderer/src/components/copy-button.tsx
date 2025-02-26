@@ -1,12 +1,13 @@
 import { Button } from '@/shared/ui'
 import { processStore, techCardStore } from '@/store'
 import { Copy } from 'lucide-react'
+import { memo } from 'react'
 
 interface CopyButtonProps {
   idCard: string
 }
 
-export const CopyButton = ({ idCard }: CopyButtonProps) => {
+export const CopyButtonMemo = ({ idCard }: CopyButtonProps) => {
   const handleCopy = () => {
     techCardStore.copyCard(idCard)
     const tech = techCardStore.get()
@@ -20,3 +21,5 @@ export const CopyButton = ({ idCard }: CopyButtonProps) => {
     </Button>
   )
 }
+
+export const CopyButton = memo(CopyButtonMemo)

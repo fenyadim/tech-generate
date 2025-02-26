@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 
 export const OpenButton = () => {
   useEffect(() => {
-    window.electron.ipcRenderer.on('file-opened', (__, data) => {
+    window.api.fileOpened((data) => {
       const { titleTool, techList, author, path } = data as IFileOpened
       fileStore.assign({ title: titleTool, author: author, path })
       techCardStore.set(techList.map((item) => ({ ...item, count: item.count ?? 1, process: [] })))
@@ -13,7 +13,7 @@ export const OpenButton = () => {
     })
 
     return () => {
-      window.electron.ipcRenderer.removeAllListeners('file-opened')
+      window.api.removeAllListeners('file-opened')
     }
   }, [])
 

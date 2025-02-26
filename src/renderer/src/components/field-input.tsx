@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib/utils'
 import { Input } from '@/shared/ui'
 import { FieldType, processStore } from '@/store/processStore'
-import { ComponentProps } from 'react'
+import { ComponentProps, memo } from 'react'
 
 interface FieldInputProps<T> extends ComponentProps<'input'> {
   initialValue: T
@@ -10,7 +10,7 @@ interface FieldInputProps<T> extends ComponentProps<'input'> {
   idParent: string
 }
 
-export const FieldInput = <T extends string | number>({
+export const FieldInputMemo = <T extends string | number>({
   initialValue,
   fieldName,
   idProcess,
@@ -44,3 +44,5 @@ export const FieldInput = <T extends string | number>({
     />
   )
 }
+
+export const FieldInput = memo(FieldInputMemo)

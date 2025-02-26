@@ -12,16 +12,12 @@ function App(): JSX.Element {
     techCardStore.createCard()
   }
 
-  const handleDelete = (id: string) => {
-    techCardStore.deleteCard(id)
-  }
-
   return (
     <main className="h-screen p-4 print:p-0">
       <Header />
       <div className="relative print:hidden grid grid-cols-auto-fill grid-flow-dense gap-4 pb-4">
         {tech.map(({ title, id, count }) => (
-          <TechCard id={String(id)} title={title} count={count} key={id} onDelete={handleDelete} />
+          <TechCard id={String(id)} title={title} count={count} key={id} />
         ))}
         <Button variant="outline" className="h-auto flex-1 print:hidden" onClick={handleCreate}>
           Добавить новую
@@ -32,13 +28,7 @@ function App(): JSX.Element {
         {halfArray(tech).map((item, id) => (
           <div className="hidden print:flex flex-col gap-2 break-inside-avoid" key={id}>
             {item.map(({ title, id, count }) => (
-              <TechCard
-                id={String(id)}
-                title={title}
-                count={count}
-                key={id}
-                onDelete={handleDelete}
-              />
+              <TechCard id={String(id)} title={title} count={count} key={id} />
             ))}
           </div>
         ))}
