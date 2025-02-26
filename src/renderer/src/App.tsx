@@ -3,7 +3,7 @@ import { Header } from './components/header'
 import { TechCard } from './components/tech-card'
 import { Button } from './shared/ui'
 import { halfArray } from './shared/utils/halfArray'
-import { techCardStore } from './store/techCardStore'
+import { techCardStore } from './store'
 
 function App(): JSX.Element {
   const tech = techCardStore.use()
