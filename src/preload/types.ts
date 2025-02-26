@@ -16,4 +16,9 @@ export interface HandlersApi {
   updateProgress: (cb: (precent: string) => void) => void
   updateStatus: (cb: (status: 'update-start' | 'update-end') => void) => void
   saveClick: (cb: () => void) => void
+  fileOpened: (cb: (data: unknown) => void) => void
+  fileSaved: (cb: () => void) => void
+  removeAllListeners: (channel: ChannelsType) => void
 }
+
+type ChannelsType = 'save-click' | 'file-saved' | 'file-opened'

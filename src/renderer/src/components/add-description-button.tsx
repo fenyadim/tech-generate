@@ -21,7 +21,6 @@ export const AddDescriptionButton = ({ id, idParent, description }: AddDescripti
 
   const handleClick = () => {
     ref.current?.focus()
-    console.log(ref.current?.focus())
     processStore.changeText(id, '1.', 'description', idParent)
   }
 

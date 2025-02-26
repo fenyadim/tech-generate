@@ -10,13 +10,8 @@ interface SaveButtonProps {
 export const SaveButton = ({ mode }: SaveButtonProps) => {
   const btnSaveRef = useRef<HTMLButtonElement>(null)
 
-  const author = fileStore.author.get()
-  const title = fileStore.title.get()
-  const tech = techCardStore.get()
-  const process = processStore.get()
-
   useEffect(() => {
-    window.electron.ipcRenderer.on('file-saved', () => {
+    window.api.fileSaved(() => {
       toast({
         title: 'Успешно',
         description: 'Файл сохранен',
@@ -30,12 +25,17 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
     })
 
     return () => {
-      window.electron.ipcRenderer.removeAllListeners('save-click')
-      window.electron.ipcRenderer.removeAllListeners('file-saved')
+      window.api.removeAllListeners('save-click')
+      window.api.removeAllListeners('file-saved')
     }
   }, [])
 
   const handleSave = async () => {
+    const author = fileStore.author.get()
+    const title = fileStore.title.get()
+    const tech = techCardStore.get()
+    const process = processStore.get()
+
     try {
       if (!title) {
         toast({

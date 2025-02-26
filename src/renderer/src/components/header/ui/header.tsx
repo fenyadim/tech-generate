@@ -11,8 +11,6 @@ export const Header = () => {
   const author = fileStore.author.use()
   const sumTime = totalSum(processStore.use(), techCardStore.use())
 
-  console.log(processStore.use())
-
   const handleCreate = async () => {
     fileStore.assign({ title: '', author: '', path: '' })
     techCardStore.set([])
