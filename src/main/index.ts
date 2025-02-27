@@ -2,11 +2,12 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
-import fs from 'fs'
-import path, { join } from 'path'
+import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+import { handleOpen } from './handle/handleOpen'
+import { handlePrint } from './handle/handlePrint'
+import { handleSave } from './handle/handleSave'
 
-let previewWindow: BrowserWindow | null
 let mainWindow: BrowserWindow
 
 log.transports.file.level = 'info'
@@ -44,11 +45,11 @@ function createWindow(): void {
   mainWindow.webContents.on('before-input-event', async (event, input) => {
     if (input.control && input.code === 'KeyP') {
       event.preventDefault()
-      handlePrint()
+      handlePrint(mainWindow)
     }
     if (input.control && input.code === 'KeyO') {
       event.preventDefault()
-      handleOpen()
+      handleOpen(mainWindow)
     }
     if (input.control && input.code === 'KeyS') {
       event.preventDefault()
@@ -63,123 +64,63 @@ function createWindow(): void {
   }
 }
 
-async function handleSave(mode: 'save' | 'save-as', { data, fileName, filePath: savedFilePath }) {
-  try {
-    if (!savedFilePath || mode === 'save-as') {
-      const { filePath } = await dialog.showSaveDialog({
-        title: 'Сохранить файл',
-        defaultPath: path.join(app.getPath('documents'), `${fileName}.json`),
-        filters: [{ name: 'JSON Files', extensions: ['json'] }]
-      })
+ipcMain.handle('print', async () => handlePrint(mainWindow))
 
-      if (!filePath) return
-      savedFilePath = filePath
-    }
+ipcMain.handle('save', async (_, data) => handleSave(mainWindow, 'save', data))
 
-    fs.writeFileSync(
-      savedFilePath,
-      JSON.stringify({ ...data, path: savedFilePath }, null, 2),
-      'utf-8'
-    )
-    mainWindow.webContents.send('file-saved')
+ipcMain.handle('save-as', async (_, data) => handleSave(mainWindow, 'save-as', data))
 
-    return { success: true, message: 'Файл успешно сохранен', filePath: savedFilePath }
-  } catch (error) {
-    return { success: false, message: `Ошибка: ${(error as Error).message}`, filePath: null }
-  }
-}
+ipcMain.handle('open', async () => handleOpen(mainWindow))
 
-async function handleOpen() {
-  const result = await dialog.showOpenDialog({
-    title: 'Открыть файл',
-    filters: [{ name: 'JSON Files', extensions: ['json'] }],
-    properties: ['openFile']
-  })
+const gotTheLock = app.requestSingleInstanceLock()
 
-  if (result.canceled) {
-    return { status: 'cancelled' }
-  }
-
-  const filePath = result.filePaths[0]
-  try {
-    const data = fs.readFileSync(filePath, 'utf-8')
-    const parsedData = JSON.parse(data)
-    mainWindow.webContents.send('file-opened', parsedData)
-    return { status: 'success', data: parsedData }
-  } catch (error) {
-    return { status: 'error', message: 'Не удалось прочитать файл.' }
-  }
-}
-
-async function handlePrint() {
-  try {
-    mainWindow.webContents.print({ silent: false, printBackground: true })
-    return { success: true, message: 'Печать запущена' }
-  } catch (error) {
-    return { success: false, message: `Ошибка печати: ${(error as Error).message}` }
-  }
-}
-
-ipcMain.handle('print', async () => {
-  try {
-    const pdfData = await mainWindow.webContents.printToPDF({
-      printBackground: true,
-      margins: {
-        marginType: 'none'
-      },
-      pageSize: 'A4'
-    })
-
-    const pdfPath = path.join(app.getPath('temp'), 'print_preview.pdf')
-    fs.writeFileSync(pdfPath, pdfData)
-
-    if (previewWindow) {
-      previewWindow.close()
-    }
-
-    previewWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (_, commandLine) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+      const filePath = commandLine.find((arg) => arg.endsWith('.json'))
+      if (filePath) {
+        handleOpen(mainWindow, filePath)
       }
-    })
-
-    previewWindow.loadURL(`file://${pdfPath}`)
-    previewWindow.on('closed', () => {
-      fs.unlinkSync(pdfPath)
-      previewWindow = null
-    })
-
-    return { success: true, message: 'Превью готово', pdfPath }
-  } catch (error) {
-    return { success: false, message: `Ошибка: ${(error as Error).message}` }
-  }
-})
-
-ipcMain.handle('save', async (_, data) => handleSave('save', data))
-
-ipcMain.handle('save-as', async (_, data) => handleSave('save-as', data))
-
-ipcMain.handle('open', async () => handleOpen())
-
-app.whenReady().then(async () => {
-  electronApp.setAppUserModelId('com.electron')
-
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
+    }
   })
 
-  createWindow()
+  app.whenReady().then(async () => {
+    electronApp.setAppUserModelId('com.electron')
 
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    app.on('browser-window-created', (_, window) => {
+      optimizer.watchWindowShortcuts(window)
+    })
+
+    createWindow()
+
+    app.on('activate', function () {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+
+    if (process.argv.length >= 2) {
+      const filePath = process.argv[1]
+      if (filePath && filePath.endsWith('.json')) {
+        mainWindow.webContents.once('did-finish-load', () => {
+          handleOpen(mainWindow, filePath)
+        })
+      }
+    }
+
+    log.info('Проверка обновлений...')
+    autoUpdater.checkForUpdatesAndNotify()
   })
 
-  log.info('Проверка обновлений...')
-  autoUpdater.checkForUpdatesAndNotify()
-})
+  app.on('open-file', (event, path) => {
+    event.preventDefault()
+    if (mainWindow) {
+      handleOpen(mainWindow, path)
+    }
+  })
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

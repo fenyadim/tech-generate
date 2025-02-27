@@ -1,22 +1,6 @@
 import { Button } from '@/shared/ui'
-import { fileStore, processStore, techCardStore } from '@/store'
-import { IFileOpened } from '@/types'
-import { useEffect } from 'react'
 
 export const OpenButton = () => {
-  useEffect(() => {
-    window.api.fileOpened((data) => {
-      const { titleTool, techList, author, path } = data as IFileOpened
-      fileStore.assign({ title: titleTool, author: author, path })
-      techCardStore.set(techList.map((item) => ({ ...item, count: item.count ?? 1, process: [] })))
-      processStore.set(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
-    })
-
-    return () => {
-      window.api.removeAllListeners('file-opened')
-    }
-  }, [])
-
   const handleOpen = async () => {
     try {
       await window.api.openFile()

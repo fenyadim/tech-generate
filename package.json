@@ -1,6 +1,6 @@
 {
   "name": "tech-generate",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -18,6 +18,13 @@
         "owner": "fenyadim",
         "repo": "tech-generate",
         "token": "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"
+      }
+    ],
+    "fileAssociations": [
+      {
+        "ext": "json",
+        "name": "JSON File",
+        "role": "Editor"
       }
     ]
   },

@@ -1,12 +1,27 @@
 import { Plus } from 'lucide-react'
+import { useEffect } from 'react'
 import { Header } from './components/header'
 import { TechCard } from './components/tech-card'
 import { Button } from './shared/ui'
 import { halfArray } from './shared/utils/halfArray'
-import { techCardStore } from './store'
+import { fileStore, processStore, techCardStore } from './store'
+import { IFileOpened } from './types'
 
 function App(): JSX.Element {
   const tech = techCardStore.use()
+
+  useEffect(() => {
+    window.api.fileOpened((data) => {
+      const { titleTool, techList, author, path } = data as IFileOpened
+      fileStore.assign({ title: titleTool, author: author, path })
+      techCardStore.set(techList.map((item) => ({ ...item, count: item.count ?? 1, process: [] })))
+      processStore.set(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+    })
+
+    return () => {
+      window.api.removeAllListeners('file-opened')
+    }
+  }, [])
 
   const handleCreate = () => {
     techCardStore.createCard()
