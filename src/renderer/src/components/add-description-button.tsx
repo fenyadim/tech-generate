@@ -3,7 +3,7 @@ import { Button } from '@/shared/ui'
 import { processStore } from '@/store/processStore'
 import _ from 'lodash'
 import { ListPlus } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { FieldTextarea } from './field-textarea'
 
 interface AddDescriptionButtonProps {
@@ -14,10 +14,6 @@ interface AddDescriptionButtonProps {
 
 export const AddDescriptionButton = ({ id, idParent, description }: AddDescriptionButtonProps) => {
   const ref = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    processStore.changeText(id, '', 'description', idParent)
-  }, [])
 
   const handleClick = () => {
     ref.current?.focus()
