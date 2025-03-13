@@ -34,7 +34,11 @@ function App(): JSX.Element {
         {tech.map(({ title, id, count }) => (
           <TechCard id={String(id)} title={title} count={count} key={id} />
         ))}
-        <Button variant="outline" className="h-auto flex-1 print:hidden" onClick={handleCreate}>
+        <Button
+          variant="outline"
+          className="h-full max-h-40 flex-1 print:hidden"
+          onClick={handleCreate}
+        >
           Добавить новую
           <Plus />
         </Button>
