@@ -14,7 +14,14 @@ function App(): JSX.Element {
     window.api.fileOpened((data) => {
       const { titleTool, techList, author, path } = data as IFileOpened
       fileStore.assign({ title: titleTool, author: author, path })
-      techCardStore.set(techList.map((item) => ({ ...item, count: item.count ?? 1, process: [] })))
+      techCardStore.set(
+        techList.map((item) => ({
+          ...item,
+          count: item.count ?? 1,
+          process: [],
+          isVisibleForPrint: true
+        }))
+      )
       processStore.set(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
     })
 
@@ -31,8 +38,14 @@ function App(): JSX.Element {
     <main className="h-screen p-4 print:p-0">
       <Header />
       <div className="relative print:hidden grid grid-cols-auto-fill grid-flow-dense gap-4 pb-4">
-        {tech.map(({ title, id, count }) => (
-          <TechCard id={String(id)} title={title} count={count} key={id} />
+        {tech.map(({ title, id, count, isVisibleForPrint }) => (
+          <TechCard
+            id={String(id)}
+            title={title}
+            count={count}
+            key={id}
+            isVisibleForPrint={isVisibleForPrint}
+          />
         ))}
         <Button
           variant="outline"
@@ -46,8 +59,14 @@ function App(): JSX.Element {
       <div className="hidden print:grid grid-cols-2 gap-2">
         {halfArray(tech).map((item, id) => (
           <div className="hidden print:flex flex-col gap-2 break-inside-avoid" key={id}>
-            {item.map(({ title, id, count }) => (
-              <TechCard id={String(id)} title={title} count={count} key={id} />
+            {item.map(({ title, id, count, isVisibleForPrint }) => (
+              <TechCard
+                id={String(id)}
+                title={title}
+                count={count}
+                key={id}
+                isVisibleForPrint={isVisibleForPrint}
+              />
             ))}
           </div>
         ))}

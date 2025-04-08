@@ -6,6 +6,7 @@ export interface ITechCard {
   id: string
   title: string
   process: IProcessItem[]
+  isVisibleForPrint: boolean
   count: number
 }
 
@@ -14,7 +15,7 @@ const initialState: ITechCard[] = []
 export const techCardStore = store(initialState).extend((store) => ({
   createCard: () =>
     store.set((draft) => {
-      draft.push({ id: uuidv4(), title: '', process: [], count: 1 })
+      draft.push({ id: uuidv4(), title: '', process: [], count: 1, isVisibleForPrint: true })
     }),
   deleteCard: (id: string) => {
     store.set((draft) => {
@@ -32,6 +33,12 @@ export const techCardStore = store(initialState).extend((store) => ({
     store.set((draft) => {
       const index = draft.findIndex((item) => item.id === id)
       if (index !== -1) draft[index].title = title
+    })
+  },
+  toggleVisible: (id: string) => {
+    store.set((draft) => {
+      const index = draft.findIndex((item) => item.id === id)
+      if (index !== -1) draft[index].isVisibleForPrint = !draft[index].isVisibleForPrint
     })
   },
   incrementCount: (id: string) => {

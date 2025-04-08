@@ -4,16 +4,16 @@ import { Trash2 } from 'lucide-react'
 import { memo } from 'react'
 
 interface DeleteCardButtonProps {
-  id: string
+  idCard: string
 }
 
-export const DeleteCardButtonMemo = ({ id }: DeleteCardButtonProps) => {
-  const handleDelete = (id: string) => () => {
-    techCardStore.deleteCard(id)
+export const DeleteCardButtonMemo = ({ idCard }: DeleteCardButtonProps) => {
+  const handleDelete = (idCard: string) => () => {
+    techCardStore.deleteCard(idCard)
   }
 
   return (
-    <Button title="Удалить" variant="ghost" size="icon" onClick={handleDelete(id)}>
+    <Button title="Удалить" variant="ghost" size="icon" onClick={handleDelete(idCard)}>
       <Trash2 className="text-red-600" />
     </Button>
   )

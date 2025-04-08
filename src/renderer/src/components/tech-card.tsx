@@ -1,29 +1,33 @@
 import { cn } from '@/shared/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui'
 import { fileStore, processStore } from '@/store'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { AddProcess } from './add-process'
 import { CopyButton } from './copy-button'
 import { CountElement } from './count-element'
 import { DeleteCardButton } from './delete-card-button'
 import { ProcessItem } from './process-item'
+import { ShowButton } from './show-button'
 import { TitleInput } from './title-input'
 
 interface TechCardProps {
   id: string
   title: string
   count: number
+  isVisibleForPrint: boolean
 }
 
-const TechCardMemo = ({ id, count = 1 }: TechCardProps) => {
+const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
   const process = processStore.use((item) => {
     return item[id]
   })
   const author = fileStore.author.use()
 
-  const sumNormTime = () => {
-    return process ? process.reduce((acc, item) => acc + (item.time ? Number(item.time) : 0), 0) : 0
-  }
+  const sumNormTime = useCallback(
+    () =>
+      process ? process.reduce((acc, item) => acc + (item.time ? Number(item.time) : 0), 0) : 0,
+    [process]
+  )
 
   const sum = (sumNormTime() * count).toFixed(2)
 
@@ -31,12 +35,14 @@ const TechCardMemo = ({ id, count = 1 }: TechCardProps) => {
     <Card
       className={cn('h-fit relative break-inside-avoid print:shadow-none', {
         'print:hidden': !process,
-        'border-destructive border-2': isNaN(sumNormTime())
+        'border-destructive border-2': isNaN(sumNormTime()),
+        'opacity-30 print:hidden': !isVisibleForPrint
       })}
     >
       <div className="absolute top-1 right-1 print:hidden">
+        <ShowButton idCard={id} isVisible={isVisibleForPrint} />
         <CopyButton idCard={id} />
-        <DeleteCardButton id={id} />
+        <DeleteCardButton idCard={id} />
       </div>
       <CardHeader className="print:p-2 print:pb-0">
         <CardTitle>
