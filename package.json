@@ -1,6 +1,6 @@
 {
   "name": "tech-generate",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "App for generating tech cards",
   "main": "./out/main/index.js",
   "author": "example.com",
