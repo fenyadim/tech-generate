@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui'
 import { fileStore, processStore } from '@/store'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { AddProcess } from './add-process'
 import { CopyButton } from './copy-button'
 import { CountElement } from './count-element'
@@ -29,7 +29,7 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
     [process]
   )
 
-  const sum = (sumNormTime() * count).toFixed(2)
+  const sum = useMemo(() => (sumNormTime() * count).toFixed(2), [])
 
   return (
     <Card

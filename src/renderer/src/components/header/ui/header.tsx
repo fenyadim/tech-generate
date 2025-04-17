@@ -22,7 +22,7 @@ export const Header = () => {
   }, [])
 
   return (
-    <header className="mb-4 flex items-center justify-between p-2 border-b print:hidden">
+    <header className="fixed z-20 bg-white top-0 left-0 right-0 flex items-center justify-between p-2 px-4 border-b print:hidden">
       <div>
         <div className="flex items-end gap-2">
           <EquipTitleInput />

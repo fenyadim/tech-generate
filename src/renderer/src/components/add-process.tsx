@@ -2,13 +2,14 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui'
 import { processStore } from '@/store/processStore'
 import { Plus } from 'lucide-react'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { AddProcessGroup } from './add-process-group'
 
 const blankProcess = ['Отрезная', 'Шлифовка', 'Слесарная', 'Заготовка']
@@ -23,9 +24,9 @@ interface AddProcessProps {
 }
 
 const AddProcessMemo = ({ idParent }: AddProcessProps) => {
-  const handleAdd = (title: string) => {
+  const handleAdd = useCallback((title: string) => {
     processStore.add(title, idParent)
-  }
+  }, [])
 
   return (
     <Dialog>
@@ -38,6 +39,7 @@ const AddProcessMemo = ({ idParent }: AddProcessProps) => {
         <DialogHeader>
           <DialogTitle>Выберите процесс</DialogTitle>
         </DialogHeader>
+        <DialogDescription className="hidden">Выберите процесс</DialogDescription>
         <AddProcessGroup title="Заготовительная" group={blankProcess} onAdd={handleAdd} />
         <AddProcessGroup title="Лезвийная" group={bladeProcess} onAdd={handleAdd} />
         <AddProcessGroup title="Шлифовальная" group={gridingProcess} onAdd={handleAdd} />

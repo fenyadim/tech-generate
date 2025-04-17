@@ -35,9 +35,9 @@ function App(): JSX.Element {
   }
 
   return (
-    <main className="h-screen p-4 print:p-0">
+    <main className="h-screen print:p-0 overflow-hidden">
       <Header />
-      <div className="relative print:hidden grid grid-cols-auto-fill grid-flow-dense gap-4 pb-4">
+      <div className="relative print:hidden grid grid-cols-auto-fill grid-flow-dense gap-4 h-full pt-28 p-4 overflow-y-scroll">
         {tech.map(({ title, id, count, isVisibleForPrint }) => (
           <TechCard
             id={String(id)}
