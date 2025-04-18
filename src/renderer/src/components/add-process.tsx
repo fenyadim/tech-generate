@@ -1,6 +1,7 @@
 import {
   Button,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -9,7 +10,7 @@ import {
 } from '@/shared/ui'
 import { processStore } from '@/store/processStore'
 import { Plus } from 'lucide-react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { AddProcessGroup } from './add-process-group'
 
 const blankProcess = ['Отрезная', 'Шлифовка', 'Слесарная', 'Заготовка']
@@ -24,14 +25,27 @@ interface AddProcessProps {
 }
 
 const AddProcessMemo = ({ idParent }: AddProcessProps) => {
+  const testRef = useRef<HTMLButtonElement>(null)
   const handleAdd = useCallback((title: string) => {
     processStore.add(title, idParent)
   }, [])
 
+  useEffect(() => {
+    if (testRef.current) {
+      console.log('CLICK')
+      testRef.current.click()
+    }
+  }, [testRef])
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button title="Добавить процесс" variant={'outline'} className="rounded-full print:hidden">
+        <Button
+          title="Добавить процесс"
+          variant={'outline'}
+          className="rounded-full print:hidden"
+          data-testid="add-process-btn"
+        >
           <Plus />
         </Button>
       </DialogTrigger>
@@ -39,6 +53,9 @@ const AddProcessMemo = ({ idParent }: AddProcessProps) => {
         <DialogHeader>
           <DialogTitle>Выберите процесс</DialogTitle>
         </DialogHeader>
+        <DialogClose ref={testRef} data-testid="modal-close-btn">
+          Test
+        </DialogClose>
         <DialogDescription className="hidden">Выберите процесс</DialogDescription>
         <AddProcessGroup title="Заготовительная" group={blankProcess} onAdd={handleAdd} />
         <AddProcessGroup title="Лезвийная" group={bladeProcess} onAdd={handleAdd} />

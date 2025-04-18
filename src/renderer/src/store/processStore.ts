@@ -1,6 +1,6 @@
 import { store, StoreApi } from '@davstack/store'
+import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
-
 export interface IProccess {
   [idTechCard: string]: IProcessItem[]
 }
@@ -43,6 +43,11 @@ export const processStore = store(initialState).extend((store) => ({
     store[idTechCard].set((draft) => {
       const index = draft.findIndex((item) => item.id === id)
       if (index !== -1) draft.splice(index, 1)
+    })
+  },
+  clear: (idTechCard: string) => {
+    store.set((draft) => {
+      _.omit(draft, idTechCard)
     })
   },
   copyProcess: (items: IProcessItem[], idTechCard: string) => {

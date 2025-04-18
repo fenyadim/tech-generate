@@ -40,6 +40,7 @@ const ProcessItemMemo = ({
         className={cn(
           'grid grid-cols-[0.3fr_3fr_1fr_0.5fr_90px] gap-1 px-2 items-center border border-b-0 rounded-t-lg print:grid-cols-[0.3fr_2fr_1fr_1fr]'
         )}
+        data-testid="process-item"
       >
         <p className="text-right">{pos}.</p>
         <p className="align-middle text-center text-ellipsis">{title}</p>

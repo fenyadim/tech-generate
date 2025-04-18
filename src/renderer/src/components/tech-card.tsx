@@ -38,6 +38,7 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
         'border-destructive border-2': isNaN(sumNormTime()),
         'opacity-30 print:hidden': !isVisibleForPrint
       })}
+      data-testid="tech-card"
     >
       <div className="absolute top-1 right-1 print:hidden">
         <ShowButton idCard={id} isVisible={isVisibleForPrint} />
@@ -46,10 +47,10 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
       </div>
       <CardHeader className="print:p-2 print:pb-0">
         <CardTitle>
-          <TitleInput id={id} />
+          <TitleInput id={id} data-testid="tech-card-title-input" />
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2 print:p-2">
+      <CardContent className="flex flex-col gap-2 print:p-2" data-testid="process-container">
         <div className="grid grid-cols-[0.3fr_3fr_1fr_1fr_70px] gap-1 justify-items-center px-2 *:font-medium text-sm print:grid-cols-[0.3fr_2fr_1fr_1fr]">
           <p>№</p>
           <p>Процесс</p>

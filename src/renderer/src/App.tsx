@@ -51,6 +51,7 @@ function App(): JSX.Element {
           variant="outline"
           className="h-full max-h-40 flex-1 print:hidden"
           onClick={handleCreate}
+          data-testid="add-tech-card-button"
         >
           Добавить новую
           <Plus />
