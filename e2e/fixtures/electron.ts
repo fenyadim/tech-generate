@@ -5,6 +5,7 @@ import path from 'path'
 export type ElectronFixture = {
   electronApp: ElectronApplication
   window: Page
+  sendIpcToRenderer: (channel: string, data: unknown) => Promise<void>
 }
 
 // Создаем фикстуры
@@ -41,6 +42,20 @@ export const test = base.extend<ElectronFixture>({
 
     // Используем окно во всех тестах
     await use(window)
+  },
+
+  sendIpcToRenderer: async ({ electronApp }, use) => {
+    const sendIpc = async (channel: string, data: unknown) => {
+      await electronApp.evaluate(
+        ({ BrowserWindow }, [ch, d]) => {
+          const mainWindow = BrowserWindow.getAllWindows()[0]
+          mainWindow.webContents.send(ch as string, d)
+        },
+        [channel, data]
+      )
+    }
+
+    await use(sendIpc)
   }
 })
 

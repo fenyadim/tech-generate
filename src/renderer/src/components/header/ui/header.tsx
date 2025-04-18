@@ -33,8 +33,11 @@ export const Header = () => {
               className="text-xl font-medium print:hidden"
               value={author}
               onChange={onChangeAuthor}
+              data-testid="header-author"
             />
-            <h3 className="font-medium hidden print:block">{author}</h3>
+            <h3 className="font-medium hidden print:block" data-testid="header-author">
+              {author}
+            </h3>
           </div>
         </div>
         <h3 className="font-medium">Общее время на всё: {sumTime}</h3>

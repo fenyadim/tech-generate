@@ -1,7 +1,7 @@
 import { PlaywrightTestConfig } from '@playwright/test'
 
 const config: PlaywrightTestConfig = {
-  testDir: './e2e',
+  testDir: './test',
   timeout: 30000,
   expect: {
     timeout: 5000
@@ -15,7 +15,13 @@ const config: PlaywrightTestConfig = {
     trace: 'on-first-retry'
   },
   testMatch: ['**/*.spec.{js,jsx,ts,tsx}'],
-  testIgnore: ['../**/*.test.{js,jsx,ts,tsx}']
+  testIgnore: ['**/*.test.{js,jsx,ts,tsx}', '**/node_modules/**', '**/src/**'],
+  projects: [
+    {
+      name: 'e2e',
+      testMatch: '**/*.spec.{js,jsx,ts,tsx}'
+    }
+  ]
 }
 
 export default config

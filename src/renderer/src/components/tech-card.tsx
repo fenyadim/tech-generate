@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui'
 import { fileStore, processStore } from '@/store'
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback } from 'react'
 import { AddProcess } from './add-process'
 import { CopyButton } from './copy-button'
 import { CountElement } from './count-element'
@@ -29,7 +29,7 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
     [process]
   )
 
-  const sum = useMemo(() => (sumNormTime() * count).toFixed(2), [])
+  const sum = (sumNormTime() * count).toFixed(2)
 
   return (
     <Card
@@ -47,7 +47,7 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
       </div>
       <CardHeader className="print:p-2 print:pb-0">
         <CardTitle>
-          <TitleInput id={id} data-testid="tech-card-title-input" />
+          <TitleInput id={id} />
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 print:p-2" data-testid="process-container">
@@ -74,7 +74,9 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
             )
           })}
         <AddProcess idParent={id} />
-        <p className="font-medium">Общее время: {sum}</p>
+        <p className="font-medium" data-testid="total-sum">
+          Общее время: {sum}
+        </p>
         <CountElement id={id} count={count} />
         <p className="hidden print:block">Автор: {author}</p>
       </CardContent>

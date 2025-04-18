@@ -23,7 +23,7 @@ export const TitleInputMemo = ({ id }: TitleInputProps) => {
         className="text-xl print:hidden"
         value={title}
         onChange={onChangeTitle}
-        data-testid="title-input"
+        data-testid="tech-card-title-input"
       />
       <h3 className="font-medium hidden print:block">{title}</h3>
     </>
