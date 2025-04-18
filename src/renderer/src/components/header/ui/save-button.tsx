@@ -87,7 +87,12 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
   }
 
   return (
-    <Button ref={mode === 'save' ? btnSaveRef : null} variant="outline" onClick={handleSave}>
+    <Button
+      ref={mode === 'save' ? btnSaveRef : null}
+      variant="outline"
+      onClick={handleSave}
+      data-testid={`header-${mode}-btn`}
+    >
       {mode === 'save' ? 'Сохранить' : 'Сохранить как'}
     </Button>
   )

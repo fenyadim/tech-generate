@@ -1,9 +1,9 @@
 import { Plus } from 'lucide-react'
 import { useEffect } from 'react'
 import { Header } from './components/header'
+import { PrintView } from './components/print-view'
 import { TechCard } from './components/tech-card'
 import { Button } from './shared/ui'
-import { halfArray } from './shared/utils/halfArray'
 import { fileStore, processStore, techCardStore } from './store'
 import { IFileOpened } from './types'
 
@@ -51,26 +51,13 @@ function App(): JSX.Element {
           variant="outline"
           className="h-full max-h-40 flex-1 print:hidden"
           onClick={handleCreate}
+          data-testid="add-tech-card-button"
         >
           Добавить новую
           <Plus />
         </Button>
       </div>
-      <div className="hidden print:grid grid-cols-2 gap-2">
-        {halfArray(tech).map((item, id) => (
-          <div className="hidden print:flex flex-col gap-2 break-inside-avoid" key={id}>
-            {item.map(({ title, id, count, isVisibleForPrint }) => (
-              <TechCard
-                id={String(id)}
-                title={title}
-                count={count}
-                key={id}
-                isVisibleForPrint={isVisibleForPrint}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+      <PrintView techCards={tech} />
     </main>
   )
 }

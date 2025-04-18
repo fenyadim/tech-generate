@@ -14,6 +14,7 @@ const EquipTitleInputMemo = () => {
         value={title}
         onChange={(e) => fileStore.title.set(e.target.value)}
         placeholder="пример РА9260769"
+        data-testid="header-title"
       />
     </div>
   )

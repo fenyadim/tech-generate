@@ -23,7 +23,7 @@ export const CountElement = ({ id, count }: CountElementProps) => {
         >
           <Minus />
         </Button>
-        <p>{count}</p>
+        <p data-testid="tech-card-count">{count}</p>
         <Button
           className="[&_svg]:size-4 size-7"
           variant="outline"

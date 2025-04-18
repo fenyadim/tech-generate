@@ -28,6 +28,7 @@ export const AddDescriptionButton = ({ id, idParent, description }: AddDescripti
           hidden: description
         })}
         onClick={handleClick}
+        data-testid="process-add-desc-btn"
       >
         Добавить описание
         <ListPlus />
@@ -38,6 +39,7 @@ export const AddDescriptionButton = ({ id, idParent, description }: AddDescripti
         idParent={idParent}
         idProcess={id}
         initialValue={description}
+        data-testid="process-desc-input"
       />
     </>
   )
