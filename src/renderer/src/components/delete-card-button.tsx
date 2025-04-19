@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui'
-import { techCardStore } from '@/store'
+import { useTechActions } from '@/store'
 import { Trash2 } from 'lucide-react'
 import { memo } from 'react'
 
@@ -8,8 +8,10 @@ interface DeleteCardButtonProps {
 }
 
 export const DeleteCardButtonMemo = ({ idCard }: DeleteCardButtonProps) => {
+  const { deleteCard } = useTechActions()
+
   const handleDelete = (idCard: string) => () => {
-    techCardStore.deleteCard(idCard)
+    deleteCard(idCard)
   }
 
   return (

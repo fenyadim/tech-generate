@@ -1,15 +1,23 @@
 import { techCardStore } from './techCardStore'
 
 describe('TechCard Store', () => {
+  // Вспомогательные функции для работы с хранилищем
+  const getStore = () => techCardStore.getState()
+  const getCards = () => getStore().techCards
+  const getActions = () => getStore().actions
+
+  // Очистка хранилища перед каждым тестом
   beforeEach(() => {
-    techCardStore.set([])
+    getActions().clearCards()
   })
 
   describe('createCard', () => {
     it('should create a new tech card with default values', () => {
-      techCardStore.createCard()
-      const cards = techCardStore.get()
+      // Act
+      getActions().createCard()
+      const cards = getCards()
 
+      // Assert
       expect(cards).toHaveLength(1)
       expect(cards[0]).toMatchObject({
         title: '',
@@ -21,34 +29,76 @@ describe('TechCard Store', () => {
     })
   })
 
+  describe('setCards', () => {
+    it('should set cards in array', () => {
+      const mockCards = [
+        {
+          id: '1',
+          title: 'TestTest',
+          process: [
+            {
+              id: '1',
+              title: 'Test',
+              category: 4,
+              description: 'Test',
+              time: '3.4'
+            }
+          ],
+          count: 1,
+          isVisibleForPrint: true
+        }
+      ]
+
+      getActions().setCards(mockCards)
+      const cards = getCards()
+
+      // Assert
+      expect(cards).toHaveLength(1)
+      expect(cards[0]).toMatchObject(mockCards[0])
+      expect(cards[0].id).toBeDefined()
+    })
+  })
+
   describe('deleteCard', () => {
     it('should delete an existing card', () => {
-      techCardStore.createCard()
-      const cards = techCardStore.get()
-      const cardId = cards[0].id
+      // Arrange
+      const { createCard, deleteCard } = getActions()
+      createCard()
+      const cardId = getCards()[0].id
 
-      techCardStore.deleteCard(cardId)
-      expect(techCardStore.get()).toHaveLength(0)
+      // Act
+      deleteCard(cardId)
+
+      // Assert
+      expect(getCards()).toHaveLength(0)
     })
 
     it('should not modify store if card id does not exist', () => {
-      techCardStore.createCard()
-      techCardStore.deleteCard('non-existent-id')
-      expect(techCardStore.get()).toHaveLength(1)
+      // Arrange
+      getActions().createCard()
+
+      // Act
+      getActions().deleteCard('non-existent-id')
+
+      // Assert
+      expect(getCards()).toHaveLength(1)
     })
   })
 
   describe('copyCard', () => {
     it('should create a copy of an existing card with new id', () => {
-      techCardStore.createCard()
-      const cards = techCardStore.get()
-      const originalId = cards[0].id
+      // Arrange
+      const { createCard, copyCard } = getActions()
+      createCard()
+      const originalId = getCards()[0].id
 
-      techCardStore.copyCard(originalId)
-      const updatedCards = techCardStore.get()
+      // Act
+      copyCard(originalId)
+      const cards = getCards()
 
-      expect(updatedCards).toHaveLength(2)
-      expect(updatedCards[1]).toMatchObject({
+      // Assert
+      expect(cards).toHaveLength(2)
+      expect(cards[1]).toMatchObject({
         ...cards[0],
         id: expect.not.stringMatching(originalId)
       })
@@ -57,39 +107,50 @@ describe('TechCard Store', () => {
 
   describe('changeTitle', () => {
     it('should update card title', () => {
-      techCardStore.createCard()
-      const cards = techCardStore.get()
-      const cardId = cards[0].id
+      // Arrange
+      const { createCard, changeTitle } = getActions()
+      createCard()
+      const cardId = getCards()[0].id
       const newTitle = 'New Title'
 
-      techCardStore.changeTitle(cardId, newTitle)
-      expect(techCardStore.get()[0].title).toBe(newTitle)
+      // Act
+      changeTitle(cardId, newTitle)
+
+      // Assert
+      expect(getCards()[0].title).toBe(newTitle)
     })
   })
 
   describe('toggleVisible', () => {
     it('should toggle card visibility', () => {
-      techCardStore.createCard()
-      const cards = techCardStore.get()
-      const cardId = cards[0].id
-      const initialVisibility = cards[0].isVisibleForPrint
+      // Arrange
+      const { createCard, toggleVisible } = getActions()
+      createCard()
+      const cardId = getCards()[0].id
+      const initialVisibility = getCards()[0].isVisibleForPrint
 
-      techCardStore.toggleVisible(cardId)
-      expect(techCardStore.get()[0].isVisibleForPrint).toBe(!initialVisibility)
+      // Act
+      toggleVisible(cardId)
+
+      // Assert
+      expect(getCards()[0].isVisibleForPrint).toBe(!initialVisibility)
     })
   })
 
   describe('count operations', () => {
     it('should increment and decrement count', () => {
-      techCardStore.createCard()
-      const cards = techCardStore.get()
-      const cardId = cards[0].id
+      // Arrange
+      const { createCard, incrementCount, decrementCount } = getActions()
+      createCard()
+      const cardId = getCards()[0].id
 
-      techCardStore.incrementCount(cardId)
-      expect(techCardStore.get()[0].count).toBe(2)
+      // Act & Assert - increment
+      incrementCount(cardId)
+      expect(getCards()[0].count).toBe(2)
 
-      techCardStore.decrementCount(cardId)
-      expect(techCardStore.get()[0].count).toBe(1)
+      // Act & Assert - decrement
+      decrementCount(cardId)
+      expect(getCards()[0].count).toBe(1)
     })
   })
 })

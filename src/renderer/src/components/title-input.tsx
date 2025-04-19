@@ -1,5 +1,5 @@
 import { Input, Label } from '@/shared/ui'
-import { techCardStore } from '@/store'
+import { useTechActions, useTechTitle } from '@/store'
 import { memo } from 'react'
 
 interface TitleInputProps {
@@ -7,10 +7,11 @@ interface TitleInputProps {
 }
 
 export const TitleInputMemo = ({ id }: TitleInputProps) => {
-  const title = techCardStore.use((item) => item.find((item) => item.id === id)?.title)
+  const title = useTechTitle(id)
+  const { changeTitle } = useTechActions()
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    techCardStore.changeTitle(id, e.target.value)
+    changeTitle(id, e.target.value)
   }
 
   return (

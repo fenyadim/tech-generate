@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui'
-import { techCardStore } from '@/store'
+import { useTechActions } from '@/store'
 import { Minus, Plus } from 'lucide-react'
 
 interface CountElementProps {
@@ -8,6 +8,8 @@ interface CountElementProps {
 }
 
 export const CountElement = ({ id, count }: CountElementProps) => {
+  const { decrementCount, incrementCount } = useTechActions()
+
   return (
     <div>
       <h3 className="font-medium">
@@ -19,7 +21,7 @@ export const CountElement = ({ id, count }: CountElementProps) => {
           disabled={count === 1}
           variant="outline"
           size="icon"
-          onClick={() => techCardStore.decrementCount(id)}
+          onClick={() => decrementCount(id)}
         >
           <Minus />
         </Button>
@@ -28,7 +30,7 @@ export const CountElement = ({ id, count }: CountElementProps) => {
           className="[&_svg]:size-4 size-7"
           variant="outline"
           size="icon"
-          onClick={() => techCardStore.incrementCount(id)}
+          onClick={() => incrementCount(id)}
         >
           <Plus />
         </Button>

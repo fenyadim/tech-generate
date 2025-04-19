@@ -1,6 +1,6 @@
 import { useIsPrintMode } from '@/shared/hooks/useIsPrintMode'
 import { halfArray } from '@/shared/utils/halfArray'
-import { ITechCard } from '@/store/techCardStore'
+import { ITechCard } from '@/store'
 import { TechCard } from './tech-card'
 
 interface IPrintView {

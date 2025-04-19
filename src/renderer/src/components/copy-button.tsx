@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui'
-import { processStore, techCardStore } from '@/store'
+import { getTechLastId, useProcessActions, useProcessItems, useTechActions } from '@/store'
 import { Copy } from 'lucide-react'
 import { memo } from 'react'
 
@@ -8,11 +8,13 @@ interface CopyButtonProps {
 }
 
 export const CopyButtonMemo = ({ idCard }: CopyButtonProps) => {
+  const { copyCard } = useTechActions()
+  const process = useProcessItems()
+  const { copyProcess } = useProcessActions('')
+
   const handleCopy = () => {
-    techCardStore.copyCard(idCard)
-    const tech = techCardStore.get()
-    const process = processStore.get()
-    processStore.copyProcess(process[idCard], tech[tech.length - 1].id)
+    copyCard(idCard)
+    copyProcess(process[idCard], getTechLastId())
   }
 
   return (

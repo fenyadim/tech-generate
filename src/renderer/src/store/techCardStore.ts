@@ -1,6 +1,20 @@
-import { store } from '@davstack/store'
 import { v4 as uuidv4 } from 'uuid'
+import { create } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
 import { IProcessItem } from './processStore'
+
+interface IActions {
+  clearCards: () => void
+  setCards: (arr: ITechCard[]) => void
+  createCard: () => void
+  deleteCard: (id: string) => void
+  copyCard: (id: string) => void
+  changeTitle: (id: string, title: string) => void
+  setProcess: (id: string, processes: IProcessItem[]) => void
+  toggleVisible: (id: string) => void
+  incrementCount: (id: string) => void
+  decrementCount: (id: string) => void
+}
 
 export interface ITechCard {
   id: string
@@ -10,47 +24,103 @@ export interface ITechCard {
   count: number
 }
 
-const initialState: ITechCard[] = []
-
-export const techCardStore = store(initialState).extend((store) => ({
-  createCard: () =>
-    store.set((draft) => {
-      draft.push({ id: uuidv4(), title: '', process: [], count: 1, isVisibleForPrint: true })
-    }),
-  deleteCard: (id: string) => {
-    store.set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft.splice(index, 1)
-    })
-  },
-  copyCard: (id: string) => {
-    store.set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft.push({ ...draft[index], id: uuidv4() })
-    })
-  },
-  changeTitle: (id: string, title: string) => {
-    store.set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft[index].title = title
-    })
-  },
-  toggleVisible: (id: string) => {
-    store.set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft[index].isVisibleForPrint = !draft[index].isVisibleForPrint
-    })
-  },
-  incrementCount: (id: string) => {
-    store.set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft[index].count += 1
-    })
-  },
-  decrementCount: (id: string) => {
-    store.set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft[index].count -= 1
-    })
+interface ITechCardStore {
+  techCards: ITechCard[]
+  actions: IActions
+  selectors: {
+    getTitleById: (id: string) => string | undefined
+    getLastId: () => string
   }
-}))
+}
+
+export const techCardStore = create<ITechCardStore>()(
+  immer((set, get) => ({
+    techCards: [],
+    actions: {
+      clearCards: () =>
+        set((state) => {
+          state.techCards = []
+        }),
+
+      setCards: (arr) =>
+        set((state) => {
+          state.techCards = arr
+        }),
+
+      createCard: () =>
+        set((state) => {
+          state.techCards.push({
+            id: uuidv4(),
+            title: '',
+            process: [],
+            count: 1,
+            isVisibleForPrint: true
+          })
+        }),
+
+      setProcess: (id, processes) =>
+        set((state) => {
+          const index = state.techCards.findIndex((card) => card.id === id)
+          if (index !== -1) {
+            state.techCards[index].process = processes
+          }
+        }),
+
+      deleteCard: (id) =>
+        set((state) => {
+          const index = state.techCards.findIndex((card) => card.id === id)
+          if (index !== -1) {
+            state.techCards.splice(index, 1)
+          }
+        }),
+
+      copyCard: (id) =>
+        set((state) => {
+          const index = state.techCards.findIndex((item) => item.id === id)
+          if (index !== -1) state.techCards.push({ ...state.techCards[index], id: uuidv4() })
+        }),
+
+      changeTitle: (id, title) =>
+        set((state) => {
+          const card = state.techCards.find((card) => card.id === id)
+          if (card) {
+            card.title = title
+          }
+        }),
+
+      toggleVisible: (id) =>
+        set((state) => {
+          const card = state.techCards.find((card) => card.id === id)
+          if (card) {
+            card.isVisibleForPrint = !card.isVisibleForPrint
+          }
+        }),
+
+      incrementCount: (id) =>
+        set((state) => {
+          const card = state.techCards.find((card) => card.id === id)
+          if (card) {
+            card.count += 1
+          }
+        }),
+
+      decrementCount: (id) =>
+        set((state) => {
+          const card = state.techCards.find((card) => card.id === id)
+          if (card) {
+            card.count -= 1
+          }
+        })
+    },
+    selectors: {
+      getTitleById: (id) => get().techCards.find((card) => card.id === id)?.title,
+      getLastId: () => get().techCards.findLast(() => true)!.id
+    }
+  }))
+)
+
+export const useTechTitle = (id: string) =>
+  techCardStore((state) => state.selectors.getTitleById(id))
+export const getTechLastId = () => techCardStore.getState().selectors.getLastId()
+export const useTechCards = () => techCardStore((state) => state.techCards)
+export const useTechActions = () => techCardStore((state) => state.actions)

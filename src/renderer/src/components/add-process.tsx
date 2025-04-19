@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui'
-import { processStore } from '@/store/processStore'
+import { useProcessActions } from '@/store'
 import { Plus } from 'lucide-react'
 import { memo, useCallback, useEffect, useRef } from 'react'
 import { AddProcessGroup } from './add-process-group'
@@ -25,9 +25,10 @@ interface AddProcessProps {
 }
 
 const AddProcessMemo = ({ idParent }: AddProcessProps) => {
+  const { addProcess } = useProcessActions(idParent)
   const testRef = useRef<HTMLButtonElement>(null)
   const handleAdd = useCallback((title: string) => {
-    processStore.add(title, idParent)
+    addProcess(title)
   }, [])
 
   useEffect(() => {

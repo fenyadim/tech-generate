@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
-import { processStore } from '@/store/processStore'
+import { useProcessActions } from '@/store'
 import _ from 'lodash'
 import { ListPlus } from 'lucide-react'
 import { useRef } from 'react'
@@ -13,11 +13,12 @@ interface AddDescriptionButtonProps {
 }
 
 export const AddDescriptionButton = ({ id, idParent, description }: AddDescriptionButtonProps) => {
+  const { changeTextProcess } = useProcessActions(idParent)
   const ref = useRef<HTMLTextAreaElement>(null)
 
   const handleClick = () => {
     ref.current?.focus()
-    processStore.changeText(id, '1.', 'description', idParent)
+    changeTextProcess(id, '1.', 'description')
   }
 
   return (

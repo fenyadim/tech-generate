@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Textarea } from '@/shared/ui'
-import { processStore } from '@/store/processStore'
+import { useProcessActions } from '@/store'
 import { ComponentProps, forwardRef, ReactElement, Ref } from 'react'
 
 interface FieldTextareaProps<T> extends ComponentProps<'textarea'> {
@@ -13,9 +13,11 @@ const FieldTextareaWithoutRef = <T extends string | number>(
   { initialValue, idProcess, idParent, ...props }: FieldTextareaProps<T>,
   ref: Ref<HTMLTextAreaElement>
 ) => {
+  const { changeTextProcess } = useProcessActions(idParent)
+
   //TODO: Добавить debounce
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    processStore.changeText(idProcess, e.target.value, 'description', idParent)
+    changeTextProcess(idProcess, e.target.value, 'description')
   }
 
   return (

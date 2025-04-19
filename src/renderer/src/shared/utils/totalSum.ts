@@ -1,8 +1,7 @@
-import { IProccess } from '@/store/processStore'
-import { ITechCard } from '@/store/techCardStore'
+import { IProcess, ITechCard } from '@/store'
 import _ from 'lodash'
 
-export const totalSum = (obj: IProccess, techCards: ITechCard[]) => {
+export const totalSum = (obj: IProcess, techCards: ITechCard[]) => {
   if (_.isEmpty(obj) || _.isEmpty(techCards)) return 0
 
   const sumArr = techCards.map(({ id, count }) => {

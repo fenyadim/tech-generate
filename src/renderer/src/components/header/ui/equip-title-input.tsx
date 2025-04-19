@@ -1,9 +1,10 @@
 import { Input, Label } from '@/shared/ui'
-import { fileStore } from '@/store'
+import { useFileActions, useFileTitle } from '@/store/fileStore'
 import { memo } from 'react'
 
 const EquipTitleInputMemo = () => {
-  const title = fileStore.title.use()
+  const title = useFileTitle()
+  const { changeValue } = useFileActions()
 
   return (
     <div>
@@ -12,7 +13,7 @@ const EquipTitleInputMemo = () => {
         id="title"
         className="text-xl font-medium print:hidden"
         value={title}
-        onChange={(e) => fileStore.title.set(e.target.value)}
+        onChange={(e) => changeValue(e.target.value, 'title')}
         placeholder="пример РА9260769"
         data-testid="header-title"
       />

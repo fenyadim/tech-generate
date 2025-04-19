@@ -1,4 +1,4 @@
-import { ITechCard } from '@/store/techCardStore'
+import { ITechCard } from '@/store'
 
 export interface IFileOpened {
   titleTool: string

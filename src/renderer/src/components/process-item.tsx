@@ -1,20 +1,20 @@
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
-import { IProcessItem, processStore } from '@/store/processStore'
+import { IProcessItem, useProcessActions } from '@/store'
 import { ArrowDown, ArrowUp, X } from 'lucide-react'
 import { memo } from 'react'
 import { AddDescriptionButton } from './add-description-button'
 import { FieldInput } from './field-input'
 
 interface ProcessItemProps extends IProcessItem {
-  parentId: string
+  idParent: string
   pos: number
   length: number
 }
 
 const ProcessItemMemo = ({
   id,
-  parentId,
+  idParent,
   pos,
   time = '',
   title,
@@ -22,16 +22,18 @@ const ProcessItemMemo = ({
   category = 0,
   length
 }: ProcessItemProps) => {
+  const { removeProcess, moveDownProcess, moveUpProcess } = useProcessActions(idParent)
+
   const handleDeleteItem = () => {
-    processStore.remove(id, parentId)
+    removeProcess(id)
   }
 
   const handleMoveDown = () => {
-    processStore.moveDown(pos - 1, parentId)
+    moveDownProcess(pos - 1)
   }
 
   const handleMoveUp = () => {
-    processStore.moveUp(pos - 1, parentId)
+    moveUpProcess(pos - 1)
   }
 
   return (
@@ -50,7 +52,7 @@ const ProcessItemMemo = ({
           fieldName="time"
           initialValue={time}
           idProcess={id}
-          idParent={parentId}
+          idParent={idParent}
           placeholder="Норма времени"
           data-testid="process-norm-time-input"
         />
@@ -58,7 +60,7 @@ const ProcessItemMemo = ({
           fieldName="category"
           initialValue={category}
           idProcess={id}
-          idParent={parentId}
+          idParent={idParent}
           min={0}
           max={5}
           type="number"
@@ -109,7 +111,7 @@ const ProcessItemMemo = ({
       >
         <p className="font-medium opacity-50">Исполнитель</p>
       </div>
-      <AddDescriptionButton id={id} idParent={parentId} description={description} />
+      <AddDescriptionButton id={id} idParent={idParent} description={description} />
     </div>
   )
 }

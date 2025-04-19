@@ -1,17 +1,22 @@
-import { processStore } from '@/store/processStore'
+import { processStore } from './processStore'
 
 describe('Process Store', () => {
+  // Вспомогательные функции для работы с хранилищем
+  const getStore = () => processStore.getState()
+  const getProcesses = (id: string) => getStore().processItems[id]
+  const getActions = (id: string) => getStore().actions(id)
+  const techCardId = 'test-card-id'
+
   beforeEach(() => {
-    processStore.set({})
+    getActions(techCardId).clearProcess()
   })
 
   describe('add', () => {
     it('should add a new process to tech card', () => {
-      const techCardId = 'test-card-id'
       const processTitle = 'Test Process'
 
-      processStore.add(processTitle, techCardId)
-      const processes = processStore.get()[techCardId]
+      getActions(techCardId).addProcess(processTitle)
+      const processes = getProcesses(techCardId)
 
       expect(processes).toHaveLength(1)
       expect(processes[0]).toMatchObject({
@@ -21,64 +26,57 @@ describe('Process Store', () => {
     })
 
     it('should initialize process array if not exists', () => {
-      const techCardId = 'test-card-id'
+      expect(getProcesses(techCardId)).toBeUndefined()
 
-      expect(processStore.get()[techCardId]).toBeUndefined()
-
-      processStore.add('Test Process', techCardId)
-      expect(processStore.get()[techCardId]).toBeDefined()
-      expect(Array.isArray(processStore.get()[techCardId])).toBe(true)
+      getActions(techCardId).addProcess('Test Process')
+      expect(getProcesses(techCardId)).toBeDefined()
+      expect(Array.isArray(getProcesses(techCardId))).toBe(true)
     })
   })
 
   describe('remove', () => {
     it('should remove process from tech card', () => {
-      const techCardId = 'test-card-id'
-      processStore.add('Test Process', techCardId)
-      const processId = processStore.get()[techCardId][0].id
+      getActions(techCardId).addProcess('Test Process')
+      const processId = getProcesses(techCardId)[0].id
 
-      processStore.remove(processId, techCardId)
-      expect(processStore.get()[techCardId]).toHaveLength(0)
+      getActions(techCardId).removeProcess(processId)
+      expect(getProcesses(techCardId)).toHaveLength(0)
     })
   })
 
   describe('copyProcess', () => {
     it('should copy processes to another tech card', () => {
-      const targetCardId = 'target-card'
       const processes = [
         { id: '1', title: 'Process 1' },
         { id: '2', title: 'Process 2' }
       ]
 
-      processStore.copyProcess(processes, targetCardId)
-      expect(processStore.get()[targetCardId]).toEqual(processes)
+      getActions(techCardId).copyProcess(processes, techCardId)
+      expect(getProcesses(techCardId)).toEqual(processes)
     })
   })
 
   describe('move operations', () => {
     beforeEach(() => {
-      const techCardId = 'test-card-id'
-      processStore.add('Process 1', techCardId)
-      processStore.add('Process 2', techCardId)
-      processStore.add('Process 3', techCardId)
+      getActions(techCardId).addProcess('Process 1')
+      getActions(techCardId).addProcess('Process 2')
+      getActions(techCardId).addProcess('Process 3')
     })
 
     it('should move process up', () => {
-      const techCardId = 'test-card-id'
-      const processes = processStore.get()[techCardId]
+      const processes = getProcesses(techCardId)
       const secondProcess = processes[1].title
 
-      processStore.moveUp(1, techCardId)
-      expect(processStore.get()[techCardId][0].title).toBe(secondProcess)
+      getActions(techCardId).moveUpProcess(1)
+      expect(getProcesses(techCardId)[0].title).toBe(secondProcess)
     })
 
     it('should move process down', () => {
-      const techCardId = 'test-card-id'
-      const processes = processStore.get()[techCardId]
+      const processes = getProcesses(techCardId)
       const secondProcess = processes[1].title
 
-      processStore.moveDown(1, techCardId)
-      expect(processStore.get()[techCardId][2].title).toBe(secondProcess)
+      getActions(techCardId).moveDownProcess(1)
+      expect(getProcesses(techCardId)[2].title).toBe(secondProcess)
     })
   })
 })
