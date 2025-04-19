@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui'
-import { techCardStore } from '@/store'
+import { useTechActions } from '@/store'
 import { Eye, EyeClosed } from 'lucide-react'
 
 interface IShowButton {
@@ -8,10 +8,12 @@ interface IShowButton {
 }
 
 export const ShowButton = ({ idCard, isVisible }: IShowButton) => {
+  const { toggleVisible } = useTechActions()
+
   const title = isVisible ? 'Скрыть при печати' : 'Показать при печати'
 
   const handleVisible = () => {
-    techCardStore.toggleVisible(idCard)
+    toggleVisible(idCard)
   }
 
   return (

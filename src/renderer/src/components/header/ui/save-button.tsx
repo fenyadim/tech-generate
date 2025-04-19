@@ -1,6 +1,14 @@
 import { toast } from '@/shared/hooks/use-toast'
 import { Button } from '@/shared/ui'
-import { fileStore, processStore, techCardStore } from '@/store'
+import {
+  useFileActions,
+  useFileAuthor,
+  useFilePath,
+  useFileTitle,
+  useProcessItems,
+  useTechCards
+} from '@/store'
+
 import { useEffect, useRef } from 'react'
 
 interface SaveButtonProps {
@@ -8,6 +16,12 @@ interface SaveButtonProps {
 }
 
 export const SaveButton = ({ mode }: SaveButtonProps) => {
+  const title = useFileTitle()
+  const author = useFileAuthor()
+  const path = useFilePath()
+  const { changeValue } = useFileActions()
+  const techCards = useTechCards()
+  const processItems = useProcessItems()
   const btnSaveRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -31,11 +45,6 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
   }, [])
 
   const handleSave = async () => {
-    const author = fileStore.author.get()
-    const title = fileStore.title.get()
-    const tech = techCardStore.get()
-    const process = processStore.get()
-
     try {
       if (!title) {
         toast({
@@ -55,7 +64,7 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
         return
       }
 
-      if (tech.length === 0) {
+      if (techCards.length === 0) {
         toast({
           title: 'Ошибка',
           description: 'Ничего не выбрано',
@@ -68,17 +77,17 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
         data: {
           titleTool: title,
           author,
-          techList: tech.map((item) => ({
+          techList: techCards.map((item) => ({
             ...item,
-            process: process[item.id],
+            process: processItems[item.id],
             count: item.count ?? 1
           }))
         },
-        filePath: fileStore.path.get(),
+        filePath: path,
         fileName: title
       })
 
-      fileStore.path.set(filePath)
+      changeValue(filePath, 'path')
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

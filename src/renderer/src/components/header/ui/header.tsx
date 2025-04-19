@@ -1,6 +1,13 @@
 import { Button, Input, Label } from '@/shared/ui'
 import { totalSum } from '@/shared/utils/totalSum'
-import { fileStore, processStore, techCardStore } from '@/store'
+import {
+  useFileActions,
+  useFileAuthor,
+  useProcessActions,
+  useProcessItems,
+  useTechActions,
+  useTechCards
+} from '@/store'
 import { useCallback } from 'react'
 import { EquipTitleInput } from './equip-title-input'
 import { OpenButton } from './open-button'
@@ -8,17 +15,23 @@ import { PrintButton } from './print-button'
 import { SaveButton } from './save-button'
 
 export const Header = () => {
-  const author = fileStore.author.use()
-  const sumTime = totalSum(processStore.use(), techCardStore.use())
+  const author = useFileAuthor()
+  const { changeValue, clearFileData } = useFileActions()
+  const techCards = useTechCards()
+  const { clearCards } = useTechActions()
+  const processItems = useProcessItems()
+  const { setProcess } = useProcessActions('')
+
+  const sumTime = totalSum(processItems, techCards)
 
   const handleCreate = async () => {
-    fileStore.assign({ title: '', author: '', path: '' })
-    techCardStore.set([])
-    processStore.set({})
+    clearFileData()
+    clearCards()
+    setProcess({})
   }
 
   const onChangeAuthor = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    fileStore.author.set(e.target.value)
+    changeValue(e.target.value, 'author')
   }, [])
 
   return (

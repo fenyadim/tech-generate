@@ -1,6 +1,7 @@
 import { cn } from '@/shared/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui'
-import { fileStore, processStore } from '@/store'
+import { useProcessItem } from '@/store'
+import { useFileAuthor } from '@/store/fileStore'
 import { memo, useCallback } from 'react'
 import { AddProcess } from './add-process'
 import { CopyButton } from './copy-button'
@@ -18,10 +19,8 @@ interface TechCardProps {
 }
 
 const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
-  const process = processStore.use((item) => {
-    return item[id]
-  })
-  const author = fileStore.author.use()
+  const process = useProcessItem(id)
+  const author = useFileAuthor()
 
   const sumNormTime = useCallback(
     () =>
@@ -63,7 +62,7 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
               <ProcessItem
                 key={processId}
                 id={processId}
-                parentId={id}
+                idParent={id}
                 pos={index + 1}
                 length={process[id]?.length}
                 title={title}

@@ -2,57 +2,74 @@ import { processStore } from '@/store/processStore'
 import { techCardStore } from '@/store/techCardStore'
 
 describe('Store Integration', () => {
+  // Вспомогательные функции для работы с хранилищем
+  const getTechStore = () => techCardStore.getState()
+  const getTechCards = () => getTechStore().techCards
+  const getTechActions = () => getTechStore().actions
+
+  const getProcessStore = () => processStore.getState()
+  const getProcessItems = (id: string) => getProcessStore().processItems[id]
+  const getProcessActions = (id: string) => getProcessStore().actions(id)
+
   beforeEach(() => {
-    techCardStore.set([])
-    processStore.set({})
+    getTechActions().clearCards()
+    getProcessActions('').setProcess({})
   })
 
   describe('Tech Card and Process Integration', () => {
     it('should handle card creation and process addition', () => {
       // Создаем карточку
-      techCardStore.createCard()
-      const card = techCardStore.get()[0]
+      getTechActions().createCard()
+      const card = getTechCards()[0]
 
       // Добавляем процесс
-      processStore.add('Test Process', card.id)
+      getProcessActions(card.id).addProcess('Test Process')
 
-      expect(techCardStore.get()).toHaveLength(1)
-      expect(processStore.get()[card.id]).toHaveLength(1)
+      expect(getTechCards()).toHaveLength(1)
+      expect(getProcessItems(card.id)).toHaveLength(1)
     })
 
     it('should handle card deletion with processes', () => {
       // Создаем карточку и процессы
-      techCardStore.createCard()
-      const card = techCardStore.get()[0]
-      processStore.add('Process 1', card.id)
-      processStore.add('Process 2', card.id)
+      getTechActions().createCard()
+      const card = getTechCards()[0]
+      getProcessActions(card.id).addProcess('Process 1')
+      getProcessActions(card.id).addProcess('Process 2')
 
       // Удаляем карточку
-      techCardStore.deleteCard(card.id)
-      processStore.clear(card.id)
+      getTechActions().deleteCard(card.id)
+      getProcessActions(card.id).clearProcess()
 
-      console.log(processStore.get())
-
-      expect(techCardStore.get()).toHaveLength(0)
+      expect(getTechCards()).toHaveLength(0)
       // Процессы для удаленной карточки должны быть недоступны
-      expect(processStore.get()[card.id]).toBeUndefined()
+      expect(getProcessItems(card.id)).toBeUndefined()
     })
 
     it('should handle card copying with processes', () => {
       // Создаем исходную карточку с процессами
-      techCardStore.createCard()
-      const originalCard = techCardStore.get()[0]
-      processStore.add('Process 1', originalCard.id)
-      processStore.add('Process 2', originalCard.id)
+      getTechActions().createCard()
+      const originalCard = getTechCards()[0]
+      getProcessActions(originalCard.id).addProcess('Process 1')
+      getProcessActions(originalCard.id).addProcess('Process 2')
+
+      getTechActions().setProcess(originalCard.id, getProcessItems(originalCard.id))
 
       // Копируем карточку
-      techCardStore.copyCard(originalCard.id)
-      const cards = techCardStore.get()
+      getTechActions().copyCard(originalCard.id)
+      const cards = getTechCards()
       const copiedCard = cards[1]
 
       // Проверяем, что процессы скопировались
-      expect(processStore.get()[copiedCard.id]).toBeDefined()
-      expect(processStore.get()[copiedCard.id]).toHaveLength(2)
+      expect(copiedCard.process).toBeDefined()
+      expect(copiedCard.process).toHaveLength(2)
+
+      getProcessActions(originalCard.id).addProcess('Process 3')
+      getTechActions().setProcess(originalCard.id, getProcessItems(originalCard.id))
+      expect(getTechCards()[0].process).toHaveLength(3)
+
+      getTechActions().copyCard(originalCard.id)
+      expect(getTechCards()[1].process).toHaveLength(2)
+      expect(getTechCards()[2].process).toHaveLength(3)
     })
   })
 })

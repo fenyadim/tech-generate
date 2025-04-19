@@ -1,12 +1,23 @@
-import { store, StoreApi } from '@davstack/store'
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
-export interface IProccess {
+import { create } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
+export interface IProcess {
   [idTechCard: string]: IProcessItem[]
 }
 
-export type FieldType = 'time' | 'description' | 'category'
+export type FieldType = keyof Omit<IProcessItem, 'id' | 'title'>
 
+interface IActions {
+  addProcess: (title: string) => void
+  setProcess: (process: IProcess) => void
+  removeProcess: (idProcess: string) => void
+  clearProcess: () => void
+  copyProcess: (items: IProcessItem[], idFreshTechCard: string) => void
+  moveUpProcess: (pos: number) => void
+  moveDownProcess: (pos: number) => void
+  changeTextProcess: (idProcess: string, text: string, field: FieldType) => void
+}
 export interface IProcessItem {
   id: string
   title: string
@@ -15,52 +26,61 @@ export interface IProcessItem {
   category?: number
 }
 
-const moveProcess = (
-  store: StoreApi<IProccess>,
-  pos: number,
-  idTechCard: string,
-  type: 'up' | 'down'
-) => {
-  store[idTechCard].set((draft) => {
-    const item = draft[pos]
-    draft.splice(pos, 1)
-    if (type === 'up') draft.splice(pos - 1, 0, item)
-    else draft.splice(pos + 1, 0, item)
-  })
+interface IProcessStore {
+  processItems: IProcess
+  actions: (idTechCard: string) => IActions
 }
 
-const initialState: IProccess = {}
-
-export const processStore = store(initialState).extend((store) => ({
-  add: (title: string, idTechCard: string) => {
-    if (!store[idTechCard].get())
-      store.assign({
-        [idTechCard]: []
-      })
-    store[idTechCard].set((draft) => draft.push({ id: uuidv4(), title }))
-  },
-  remove: (id: string, idTechCard: string) => {
-    store[idTechCard].set((draft) => {
-      const index = draft.findIndex((item) => item.id === id)
-      if (index !== -1) draft.splice(index, 1)
-    })
-  },
-  clear: (idTechCard: string) => {
-    store.set((draft) => {
-      _.omit(draft, idTechCard)
-    })
-  },
-  copyProcess: (items: IProcessItem[], idTechCard: string) => {
-    store.assign({ [idTechCard]: items })
-  },
-  moveDown: (pos: number, idTechCard: string) => {
-    moveProcess(store, pos, idTechCard, 'down')
-  },
-  moveUp: (pos: number, idTechCard: string) => {
-    moveProcess(store, pos, idTechCard, 'up')
-  },
-  changeText: (id: string, text: string, field: FieldType, idTechCard: string) => {
-    const index = store[idTechCard].get().findIndex((item) => item.id === id)
-    store[idTechCard][index].assign({ [field]: text })
+const moveProcess =
+  (pos: number, idTechCard: string, type: 'up' | 'down') => (state: IProcessStore) => {
+    const item = state.processItems[idTechCard][pos]
+    state.processItems[idTechCard].splice(pos, 1)
+    if (type === 'up') state.processItems[idTechCard].splice(pos - 1, 0, item)
+    else state.processItems[idTechCard].splice(pos + 1, 0, item)
   }
-}))
+
+export const processStore = create<IProcessStore>()(
+  immer((set) => ({
+    processItems: {},
+    actions: (idTechCard) => ({
+      addProcess: (title) =>
+        set((state) => {
+          if (!state.processItems[idTechCard]) {
+            state.processItems[idTechCard] = []
+          }
+          state.processItems[idTechCard].push({ id: uuidv4(), title })
+        }),
+      setProcess: (process) =>
+        set((state) => {
+          state.processItems = process
+        }),
+      removeProcess: (idProcess) =>
+        set((state) => {
+          const index = state.processItems[idTechCard].findIndex((item) => item.id === idProcess)
+          if (index !== -1) state.processItems[idTechCard].splice(index, 1)
+        }),
+      clearProcess: () =>
+        set((state) => {
+          state.processItems = _.omit(state.processItems, idTechCard)
+        }),
+      copyProcess: (items: IProcessItem[], idFreshTechCard: string) =>
+        set((state) => {
+          state.processItems[idFreshTechCard] = items
+        }),
+      moveDownProcess: (pos: number) => set(moveProcess(pos, idTechCard, 'down')),
+      moveUpProcess: (pos: number) => set(moveProcess(pos, idTechCard, 'up')),
+      changeTextProcess: (id: string, text: string, field: FieldType) =>
+        set((state) => {
+          const index = state.processItems[idTechCard].findIndex((item) => item.id === id)
+          state.processItems[idTechCard][index] = {
+            ...state.processItems[idTechCard][index],
+            [field]: text
+          }
+        })
+    })
+  }))
+)
+
+export const useProcessItems = () => processStore((state) => state.processItems)
+export const useProcessItem = (id: string) => processStore((state) => state.processItems[id])
+export const useProcessActions = (idTechCard: string) => processStore.getState().actions(idTechCard)

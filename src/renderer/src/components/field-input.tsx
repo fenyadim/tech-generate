@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils'
 import { Input } from '@/shared/ui'
-import { FieldType, processStore } from '@/store/processStore'
+import { FieldType, useProcessActions } from '@/store'
 import { ComponentProps, memo } from 'react'
 
 interface FieldInputProps<T> extends ComponentProps<'input'> {
@@ -25,8 +25,10 @@ export const FieldInputMemo = <T extends string | number>({
   //   500
   // )
 
+  const { changeTextProcess } = useProcessActions(idParent)
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    processStore.changeText(idProcess, e.target.value, fieldName, idParent)
+    changeTextProcess(idProcess, e.target.value, fieldName)
   }
 
   return (

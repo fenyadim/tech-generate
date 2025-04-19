@@ -4,17 +4,22 @@ import { Header } from './components/header'
 import { PrintView } from './components/print-view'
 import { TechCard } from './components/tech-card'
 import { Button } from './shared/ui'
-import { fileStore, processStore, techCardStore } from './store'
+import { useProcessActions, useTechActions, useTechCards } from './store'
+import { useFileActions } from './store/fileStore'
 import { IFileOpened } from './types'
 
 function App(): JSX.Element {
-  const tech = techCardStore.use()
+  const techCards = useTechCards()
+  const { setCards, createCard } = useTechActions()
+  const { changeAll } = useFileActions()
+  const { setProcess } = useProcessActions('')
 
   useEffect(() => {
     window.api.fileOpened((data) => {
       const { titleTool, techList, author, path } = data as IFileOpened
-      fileStore.assign({ title: titleTool, author: author, path })
-      techCardStore.set(
+
+      changeAll({ title: titleTool, author: author, path })
+      setCards(
         techList.map((item) => ({
           ...item,
           count: item.count ?? 1,
@@ -22,7 +27,7 @@ function App(): JSX.Element {
           isVisibleForPrint: true
         }))
       )
-      processStore.set(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+      setProcess(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
     })
 
     return () => {
@@ -31,14 +36,14 @@ function App(): JSX.Element {
   }, [])
 
   const handleCreate = () => {
-    techCardStore.createCard()
+    createCard()
   }
 
   return (
     <main className="h-screen print:p-0 overflow-hidden">
       <Header />
       <div className="relative print:hidden grid grid-cols-auto-fill grid-flow-dense gap-4 h-full pt-28 p-4 overflow-y-scroll">
-        {tech.map(({ title, id, count, isVisibleForPrint }) => (
+        {techCards.map(({ title, id, count, isVisibleForPrint }) => (
           <TechCard
             id={String(id)}
             title={title}
@@ -57,7 +62,7 @@ function App(): JSX.Element {
           <Plus />
         </Button>
       </div>
-      <PrintView techCards={tech} />
+      <PrintView techCards={techCards} />
     </main>
   )
 }

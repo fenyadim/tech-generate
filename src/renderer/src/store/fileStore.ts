@@ -1,15 +1,48 @@
-import { store } from '@davstack/store'
+import { create } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
 
-interface IFileStore {
+interface IAction {
+  clearFileData: () => void
+  changeAll: (obj: IFileData) => void
+  changeValue: (value: string, field: keyof IFileData) => void
+}
+
+interface IFileData {
   title: string
   author: string
   path: string
 }
 
-const initialState: IFileStore = {
-  title: '',
-  author: '',
-  path: ''
+interface IFileStore {
+  fileData: IFileData
+  action: IAction
 }
 
-export const fileStore = store(initialState)
+const fileStore = create<IFileStore>()(
+  immer((set) => ({
+    fileData: {
+      title: '',
+      author: '',
+      path: ''
+    },
+    action: {
+      clearFileData: () =>
+        set((state) => {
+          state.fileData = { title: '', path: '', author: '' }
+        }),
+      changeAll: (obj) =>
+        set((state) => {
+          state.fileData = obj
+        }),
+      changeValue: (value, field) =>
+        set((state) => {
+          state.fileData[field] = value
+        })
+    }
+  }))
+)
+
+export const useFileTitle = () => fileStore((state) => state.fileData.title)
+export const useFileAuthor = () => fileStore((state) => state.fileData.author)
+export const useFilePath = () => fileStore((state) => state.fileData.path)
+export const useFileActions = () => fileStore((state) => state.action)
