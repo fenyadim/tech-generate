@@ -10,10 +10,10 @@ export const ToggleVisionButton = () => {
 
   return (
     <>
-      <Button variant="ghost" onClick={handleClick(true)}>
+      <Button variant="ghost" size="sm" onClick={handleClick(true)}>
         Показать все
       </Button>
-      <Button variant="ghost" onClick={handleClick(false)}>
+      <Button variant="ghost" size="sm" onClick={handleClick(false)}>
         Скрыть все
       </Button>
     </>
