@@ -1,7 +1,8 @@
+import { useDebounce } from '@/shared/hooks/use-debounce'
 import { cn } from '@/shared/lib/utils'
 import { Input } from '@/shared/ui'
 import { FieldType, useProcessActions } from '@/store'
-import { ComponentProps, memo } from 'react'
+import { ComponentProps, memo, useState } from 'react'
 
 interface FieldInputProps<T> extends ComponentProps<'input'> {
   initialValue: T
@@ -18,17 +19,17 @@ export const FieldInputMemo = <T extends string | number>({
   type,
   ...props
 }: FieldInputProps<T>) => {
-  //TODO: Добавить debounce
-  // const debounced = debounce(
-  //   (e: React.ChangeEvent<HTMLInputElement>) =>
-  //     changeText(idProcess, e.target.value as T, fieldName, idParent),
-  //   500
-  // )
-
   const { changeTextProcess } = useProcessActions(idParent)
+  const [value, setValue] = useState(initialValue)
+
+  const debouncedChangeText = useDebounce((value) => {
+    changeTextProcess(idProcess, value as string, fieldName)
+  }, 300)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    changeTextProcess(idProcess, e.target.value, fieldName)
+    const newValue = e.target.value
+    setValue(newValue as T)
+    debouncedChangeText(newValue)
   }
 
   return (
@@ -41,7 +42,7 @@ export const FieldInputMemo = <T extends string | number>({
         }
       )}
       type={type}
-      value={initialValue}
+      value={value}
       onChange={onChange}
     />
   )

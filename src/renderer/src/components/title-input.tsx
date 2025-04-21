@@ -1,6 +1,7 @@
+import { useDebounce } from '@/shared/hooks/use-debounce'
 import { Input, Label } from '@/shared/ui'
 import { useTechActions, useTechTitle } from '@/store'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 
 interface TitleInputProps {
   id: string
@@ -9,9 +10,16 @@ interface TitleInputProps {
 export const TitleInputMemo = ({ id }: TitleInputProps) => {
   const title = useTechTitle(id)
   const { changeTitle } = useTechActions()
+  const [value, setValue] = useState(title)
+
+  const debouncedChangeTitle = useDebounce((value) => {
+    changeTitle(id, value as string)
+  }, 300)
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    changeTitle(id, e.target.value)
+    const newValue = e.target.value
+    setValue(newValue)
+    debouncedChangeTitle(newValue)
   }
 
   return (
@@ -22,7 +30,7 @@ export const TitleInputMemo = ({ id }: TitleInputProps) => {
       <Input
         id="title"
         className="text-xl print:hidden"
-        value={title}
+        value={value}
         onChange={onChangeTitle}
         data-testid="tech-card-title-input"
       />

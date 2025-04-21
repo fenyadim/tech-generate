@@ -1,7 +1,8 @@
+import { useDebounce } from '@/shared/hooks/use-debounce'
 import { cn } from '@/shared/lib/utils'
 import { Textarea } from '@/shared/ui'
 import { useProcessActions } from '@/store'
-import { ComponentProps, forwardRef, ReactElement, Ref } from 'react'
+import { ComponentProps, forwardRef, ReactElement, Ref, useState } from 'react'
 
 interface FieldTextareaProps<T> extends ComponentProps<'textarea'> {
   initialValue: T
@@ -14,10 +15,16 @@ const FieldTextareaWithoutRef = <T extends string | number>(
   ref: Ref<HTMLTextAreaElement>
 ) => {
   const { changeTextProcess } = useProcessActions(idParent)
+  const [value, setValue] = useState(initialValue)
 
-  //TODO: Добавить debounce
+  const debouncedChangeText = useDebounce((value) => {
+    changeTextProcess(idProcess, value as string, 'description')
+  }, 300)
+
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    changeTextProcess(idProcess, e.target.value, 'description')
+    const newValue = e.target.value
+    setValue(newValue as T)
+    debouncedChangeText(newValue)
   }
 
   return (
@@ -28,7 +35,7 @@ const FieldTextareaWithoutRef = <T extends string | number>(
         props.className,
         'rounded-none border-border shadow-none rounded-b-lg print:border-t-0 [field-sizing:content] resize-none print:py-1 print:text-sm'
       )}
-      value={initialValue}
+      value={value}
       onChange={onChange}
     />
   )
