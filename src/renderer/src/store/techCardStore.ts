@@ -12,6 +12,7 @@ interface IActions {
   changeTitle: (id: string, title: string) => void
   setProcess: (id: string, processes: IProcessItem[]) => void
   toggleVisible: (id: string) => void
+  setVisible: (isVisible: boolean) => void
   incrementCount: (id: string) => void
   decrementCount: (id: string) => void
 }
@@ -94,6 +95,14 @@ export const techCardStore = create<ITechCardStore>()(
           if (card) {
             card.isVisibleForPrint = !card.isVisibleForPrint
           }
+        }),
+
+      setVisible: (isVisible) =>
+        set((state) => {
+          state.techCards = state.techCards.map((item) => ({
+            ...item,
+            isVisibleForPrint: isVisible
+          }))
         }),
 
       incrementCount: (id) =>

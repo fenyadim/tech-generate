@@ -17,9 +17,9 @@ export const TechCardWrapper = () => {
       {techCards.map(({ title, id, count, isVisibleForPrint }) => (
         <div
           key={id}
-          className={cn('break-inside-avoid-page', {
-            'hidden print:block': !isVisibleForPrint,
-            'block ': isVisibleForPrint
+          className={cn('break-inside-avoid', {
+            'print:hidden': !isVisibleForPrint,
+            'print:block ': isVisibleForPrint
           })}
         >
           <TechCard

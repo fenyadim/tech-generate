@@ -13,6 +13,7 @@ import { EquipTitleInput } from './equip-title-input'
 import { OpenButton } from './open-button'
 import { PrintButton } from './print-button'
 import { SaveButton } from './save-button'
+import { ToggleVisionButton } from './toggle-vision-toggle'
 
 export const Header = () => {
   const author = useFileAuthor()
@@ -59,10 +60,15 @@ export const Header = () => {
         <Button onClick={handleCreate}>Создать новую</Button>
         <PrintButton />
       </div>
-      <div className="flex gap-2">
-        <SaveButton mode="save" />
-        <SaveButton mode="save-as" />
-        <OpenButton />
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          <SaveButton mode="save" />
+          <SaveButton mode="save-as" />
+          <OpenButton />
+        </div>
+        <div className="self-end">
+          <ToggleVisionButton />
+        </div>
       </div>
     </header>
   )
