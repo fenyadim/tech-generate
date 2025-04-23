@@ -2,16 +2,16 @@ import { useDebounce } from '@/shared/hooks/use-debounce'
 import { cn } from '@/shared/lib/utils'
 import { Textarea } from '@/shared/ui'
 import { useProcessActions } from '@/store'
-import { ComponentProps, forwardRef, ReactElement, Ref, useState } from 'react'
+import { ComponentProps, forwardRef, Ref, useState } from 'react'
 
-interface FieldTextareaProps<T> extends ComponentProps<'textarea'> {
-  initialValue: T
+interface FieldTextareaProps extends ComponentProps<'textarea'> {
+  initialValue: string
   idProcess: string
   idParent: string
 }
 
-const FieldTextareaWithoutRef = <T extends string | number>(
-  { initialValue, idProcess, idParent, ...props }: FieldTextareaProps<T>,
+const FieldTextareaWithoutRef = (
+  { initialValue, idProcess, idParent, ...props }: FieldTextareaProps,
   ref: Ref<HTMLTextAreaElement>
 ) => {
   const { changeTextProcess } = useProcessActions(idParent)
@@ -23,7 +23,7 @@ const FieldTextareaWithoutRef = <T extends string | number>(
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value
-    setValue(newValue as T)
+    setValue(newValue)
     debouncedChangeText(newValue)
   }
 
@@ -41,6 +41,4 @@ const FieldTextareaWithoutRef = <T extends string | number>(
   )
 }
 
-export const FieldTextarea = forwardRef(FieldTextareaWithoutRef) as <T extends string | number>(
-  props: FieldTextareaProps<T> & { ref?: Ref<HTMLTextAreaElement> }
-) => ReactElement
+export const FieldTextarea = forwardRef(FieldTextareaWithoutRef)
