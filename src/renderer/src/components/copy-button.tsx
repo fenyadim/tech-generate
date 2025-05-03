@@ -18,7 +18,13 @@ export const CopyButtonMemo = ({ idCard }: CopyButtonProps) => {
   }
 
   return (
-    <Button variant="ghost" title="Дублировать" onClick={handleCopy} size="icon">
+    <Button
+      variant="ghost"
+      title="Дублировать"
+      onClick={handleCopy}
+      size="icon"
+      data-testid="copy-btn"
+    >
       <Copy />
     </Button>
   )

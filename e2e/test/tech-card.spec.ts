@@ -43,7 +43,7 @@ test.describe('Tech Card Operations', () => {
     await inputTechCardFirst.fill('Первая карточка')
 
     // Находим кнопку копирования
-    const copyButton = window.getByTitle('Дублировать').first()
+    const copyButton = techCardFirst.getByTestId('copy-btn').first()
     await copyButton.click()
 
     // Проверяем, что карточек стало две
