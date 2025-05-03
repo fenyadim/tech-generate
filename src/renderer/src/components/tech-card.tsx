@@ -21,6 +21,8 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
   const process = useProcessItem(id)
   const author = useFileAuthor()
 
+  console.log(id)
+
   const sumNormTime = useCallback(
     () =>
       process ? process.reduce((acc, item) => acc + (item.time ? Number(item.time) : 0), 0) : 0,

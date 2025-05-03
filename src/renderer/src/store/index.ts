@@ -15,4 +15,11 @@ export {
   type ITechCard
 } from './techCardStore'
 
-export { useFileActions, useFileAuthor, useFilePath, useFileTitle } from './fileStore'
+export {
+  useFileActions,
+  useFileAuthor,
+  useFileFields,
+  useFilePath,
+  useFileTitle,
+  type IFileData
+} from './fileStore'

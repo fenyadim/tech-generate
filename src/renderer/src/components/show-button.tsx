@@ -1,13 +1,14 @@
 import { Button } from '@/shared/ui'
 import { useTechActions } from '@/store'
 import { Eye, EyeClosed } from 'lucide-react'
+import { memo } from 'react'
 
 interface IShowButton {
   idCard: string
   isVisible: boolean
 }
 
-export const ShowButton = ({ idCard, isVisible }: IShowButton) => {
+export const ShowButtonMemo = ({ idCard, isVisible }: IShowButton) => {
   const { toggleVisible } = useTechActions()
 
   const title = isVisible ? 'Скрыть при печати' : 'Показать при печати'
@@ -22,3 +23,5 @@ export const ShowButton = ({ idCard, isVisible }: IShowButton) => {
     </Button>
   )
 }
+
+export const ShowButton = memo(ShowButtonMemo)

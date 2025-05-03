@@ -1,7 +1,18 @@
-import { Button } from '@/shared/ui/button'
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/shared/ui'
 import { useTechActions } from '@/store'
+import { ArrowDown } from 'lucide-react'
 
-export const ToggleVisionButton = () => {
+interface IToggleVisionButtonProps {
+  disabled: boolean
+}
+
+export const ToggleVisionButton = ({ disabled }: IToggleVisionButtonProps) => {
   const { setVisible } = useTechActions()
 
   const handleClick = (isVisible: boolean) => () => {
@@ -9,13 +20,16 @@ export const ToggleVisionButton = () => {
   }
 
   return (
-    <>
-      <Button variant="ghost" size="sm" onClick={handleClick(true)}>
-        Показать все
-      </Button>
-      <Button variant="ghost" size="sm" onClick={handleClick(false)}>
-        Скрыть все
-      </Button>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" disabled={disabled}>
+          <ArrowDown />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={handleClick(true)}>Показать все</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleClick(false)}>Скрыть все</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

@@ -1,23 +1,20 @@
-import { Button, Input, Label } from '@/shared/ui'
+import { Button } from '@/shared/ui'
 import { totalSum } from '@/shared/utils/totalSum'
 import {
   useFileActions,
-  useFileAuthor,
   useProcessActions,
   useProcessItems,
   useTechActions,
   useTechCards
 } from '@/store'
-import { useCallback } from 'react'
-import { EquipTitleInput } from './equip-title-input'
+import { HeaderInput } from './header-input'
 import { OpenButton } from './open-button'
 import { PrintButton } from './print-button'
 import { SaveButton } from './save-button'
 import { ToggleVisionButton } from './toggle-vision-toggle'
 
 export const Header = () => {
-  const author = useFileAuthor()
-  const { changeValue, clearFileData } = useFileActions()
+  const { clearFileData } = useFileActions()
   const techCards = useTechCards()
   const { clearCards } = useTechActions()
   const processItems = useProcessItems()
@@ -31,28 +28,12 @@ export const Header = () => {
     setProcess({})
   }
 
-  const onChangeAuthor = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    changeValue(e.target.value, 'author')
-  }, [])
-
   return (
     <header className="fixed z-20 bg-white top-0 left-0 right-0 flex items-center justify-between p-2 px-4 border-b print:hidden">
       <div>
         <div className="flex items-end gap-2">
-          <EquipTitleInput />
-          <div>
-            <Label htmlFor="author">Автор</Label>
-            <Input
-              id="author"
-              className="text-xl font-medium print:hidden"
-              value={author}
-              onChange={onChangeAuthor}
-              data-testid="header-author"
-            />
-            <h3 className="font-medium hidden print:block" data-testid="header-author">
-              {author}
-            </h3>
-          </div>
+          <HeaderInput field="title" placeholder="пример РА9260769" />
+          <HeaderInput field="author" />
         </div>
         <h3 className="font-medium">Общее время на всё: {sumTime}</h3>
       </div>
@@ -60,15 +41,11 @@ export const Header = () => {
         <Button onClick={handleCreate}>Создать новую</Button>
         <PrintButton />
       </div>
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2">
-          <SaveButton mode="save" />
-          <SaveButton mode="save-as" />
-          <OpenButton />
-        </div>
-        <div className="self-end">
-          <ToggleVisionButton />
-        </div>
+      <div className="flex gap-2">
+        <SaveButton mode="save" />
+        <SaveButton mode="save-as" />
+        <OpenButton />
+        <ToggleVisionButton disabled={techCards.length === 0} />
       </div>
     </header>
   )

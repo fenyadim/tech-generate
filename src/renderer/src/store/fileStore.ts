@@ -7,7 +7,7 @@ interface IAction {
   changeValue: (value: string, field: keyof IFileData) => void
 }
 
-interface IFileData {
+export interface IFileData {
   title: string
   author: string
   path: string
@@ -45,4 +45,5 @@ const fileStore = create<IFileStore>()(
 export const useFileTitle = () => fileStore((state) => state.fileData.title)
 export const useFileAuthor = () => fileStore((state) => state.fileData.author)
 export const useFilePath = () => fileStore((state) => state.fileData.path)
+export const useFileFields = (field: keyof IFileData) => fileStore((state) => state.fileData[field])
 export const useFileActions = () => fileStore((state) => state.action)
