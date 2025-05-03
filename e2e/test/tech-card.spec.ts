@@ -129,7 +129,10 @@ test.describe('Process Operations', () => {
     // Проверяем общее время
     const totalTime = window.getByTestId('total-sum').first()
     await expect(totalTime).toBeVisible()
-    expect(totalTime).toHaveText('Общее время: 4.00')
+
+    await window.waitForTimeout(100)
+
+    await expect(totalTime).toHaveText('Общее время: 4.00')
   })
 
   test('should reorder processes', async ({ window }) => {
