@@ -35,7 +35,7 @@ export const AddDescriptionButton = ({ id, idParent, description }: AddDescripti
         <ListPlus />
       </Button>
       <FieldTextarea
-        className={cn({ 'opacity-0 size-0 leading-0 p-0': _.isEmpty(description) })}
+        className={cn({ 'opacity-0 size-0 leading-0 p-0 min-h-0': _.isEmpty(description) })}
         ref={ref}
         idParent={idParent}
         idProcess={id}
