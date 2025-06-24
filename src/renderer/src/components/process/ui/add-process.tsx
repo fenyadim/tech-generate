@@ -20,9 +20,12 @@ interface AddProcessProps {
 
 const AddProcessMemo = ({ idParent }: AddProcessProps) => {
   const { addProcess } = useProcessActions(idParent)
-  const handleAdd = useCallback((title: string) => {
-    addProcess(title)
-  }, [])
+  const handleAdd = useCallback(
+    (title: string) => {
+      addProcess(title)
+    },
+    [addProcess]
+  )
 
   return (
     <Dialog>
