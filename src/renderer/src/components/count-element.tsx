@@ -20,6 +20,7 @@ const CountElementMemo = ({ id, count }: CountElementProps) => {
         <Button
           className="h-7 w-10 [&_svg]:size-3 gap-0"
           variant="outline"
+          disabled={count <= 10}
           onClick={() => decrementCount(id, 10)}
         >
           <Minus />

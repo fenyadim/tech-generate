@@ -15,7 +15,7 @@ export const CopyButtonMemo = ({ idCard }: CopyButtonProps) => {
   const handleCopy = useCallback(() => {
     copyCard(idCard)
     copyProcess(process[idCard], getTechLastId())
-  }, [])
+  }, [copyCard, copyProcess, idCard, process])
 
   return (
     <Button
