@@ -145,11 +145,11 @@ describe('TechCard Store', () => {
       const cardId = getCards()[0].id
 
       // Act & Assert - increment
-      incrementCount(cardId)
+      incrementCount(cardId, 1)
       expect(getCards()[0].count).toBe(2)
 
       // Act & Assert - decrement
-      decrementCount(cardId)
+      decrementCount(cardId, 1)
       expect(getCards()[0].count).toBe(1)
     })
   })
