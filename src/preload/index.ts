@@ -10,6 +10,12 @@ const api: HandlersApi = {
   updateProgress: (cb) => ipcRenderer.on('update-progress', (_, precent) => cb(precent)),
   updateStatus: (cb) => ipcRenderer.on('update-status', (_, status) => cb(status)),
   saveClick: (cb) => ipcRenderer.on('save-click', () => cb()),
+  saveAsClick: (cb) => ipcRenderer.on('save-as-click', () => cb()),
+  onGetUnsavedStatusRequest: (getStatus: () => boolean) => {
+    ipcRenderer.on('get-unsaved-status', () => {
+      ipcRenderer.send('unsaved-status-response', getStatus())
+    })
+  },
   fileOpened: (cb) => ipcRenderer.on('file-opened', (_, data) => cb(data)),
   fileSaved: (cb) => ipcRenderer.on('file-saved', () => cb()),
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)

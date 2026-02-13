@@ -7,6 +7,7 @@ import {
   useProcessItems,
   useTechCards
 } from '@/store'
+import { unsavedStore } from '@/store/unsavedStore'
 
 import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
@@ -26,18 +27,29 @@ export const SaveButton = ({ mode }: SaveButtonProps) => {
 
   useEffect(() => {
     window.api.fileSaved(() => {
+      unsavedStore.getState().setDirty(false)
       toast.success('Успешно', {
         description: 'Файл сохранен'
       })
     })
 
     window.api.saveClick(() => {
-      btnSaveRef.current?.focus()
-      btnSaveRef.current?.click()
+      if (mode === 'save') {
+        btnSaveRef.current?.focus()
+        btnSaveRef.current?.click()
+      }
+    })
+
+    window.api.saveAsClick(() => {
+      if (mode === 'save-as') {
+        btnSaveRef.current?.focus()
+        btnSaveRef.current?.click()
+      }
     })
 
     return () => {
       window.api.removeAllListeners('save-click')
+      window.api.removeAllListeners('save-as-click')
       window.api.removeAllListeners('file-saved')
     }
   }, [])

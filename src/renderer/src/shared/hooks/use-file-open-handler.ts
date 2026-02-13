@@ -1,4 +1,5 @@
 import { useFileActions, useProcessActions, useTechActions } from '@/store'
+import { unsavedStore } from '@/store/unsavedStore'
 import { IFileOpened } from '@/types'
 import { useEffect } from 'react'
 
@@ -11,6 +12,7 @@ export const useFileOpenHandler = () => {
     const handleFileOpen = (data: IFileOpened) => {
       const { titleTool, techList, author, path } = data
 
+      unsavedStore.getState().setLoading(true)
       changeAll({ title: titleTool, author, path })
       setCards(
         techList.map((item) => ({
@@ -21,6 +23,8 @@ export const useFileOpenHandler = () => {
         }))
       )
       setProcess(techList.reduce((acc, item) => ({ ...acc, [item.id]: item.process }), {}))
+      unsavedStore.getState().setLoading(false)
+      unsavedStore.getState().setDirty(false)
     }
 
     window.api.fileOpened(handleFileOpen)

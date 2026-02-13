@@ -7,6 +7,7 @@ import {
   useTechActions,
   useTechCards
 } from '@/store'
+import { unsavedStore } from '@/store/unsavedStore'
 import { useCallback, useMemo } from 'react'
 import { HeaderInput } from './header-input'
 import { OpenButton } from './open-button'
@@ -27,6 +28,7 @@ export const Header = () => {
     clearFileData()
     clearCards()
     setProcess({})
+    unsavedStore.getState().setDirty(false)
   }, [clearCards, clearFileData, setProcess])
 
   return (

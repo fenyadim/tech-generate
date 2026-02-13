@@ -18,7 +18,7 @@ interface IFileStore {
   action: IAction
 }
 
-const fileStore = create<IFileStore>()(
+export const fileStore = create<IFileStore>()(
   immer((set) => ({
     fileData: {
       title: '',

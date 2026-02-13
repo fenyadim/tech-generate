@@ -42,6 +42,46 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
+  let forceClose = false
+  mainWindow.on('close', async (e) => {
+    if (forceClose) return
+
+    e.preventDefault()
+
+    try {
+      const isDirty = await new Promise<boolean>((resolve) => {
+        const timeout = setTimeout(() => resolve(false), 2000)
+        ipcMain.once('unsaved-status-response', (_, value: boolean) => {
+          clearTimeout(timeout)
+          resolve(value)
+        })
+        mainWindow.webContents.send('get-unsaved-status')
+      })
+
+      if (isDirty) {
+        const result = await dialog.showMessageBox(mainWindow, {
+          type: 'question',
+          title: 'Несохранённые изменения',
+          message: 'Данный тех.процесс не сохранён. Хотите выйти без сохранения?',
+          buttons: ['Да', 'Нет']
+        })
+
+        if (result.response === 0) {
+          forceClose = true
+          mainWindow.close()
+        } else {
+          mainWindow.webContents.send('save-as-click')
+        }
+      } else {
+        forceClose = true
+        mainWindow.close()
+      }
+    } catch {
+      forceClose = true
+      mainWindow.close()
+    }
+  })
+
   mainWindow.webContents.on('before-input-event', async (event, input) => {
     if (input.control && input.code === 'KeyP') {
       event.preventDefault()
