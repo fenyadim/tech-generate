@@ -16,6 +16,7 @@ interface IActions {
   copyProcess: (items: IProcessItem[], idFreshTechCard: string) => void
   moveUpProcess: (pos: number) => void
   moveDownProcess: (pos: number) => void
+  reorderProcess: (fromIndex: number, toIndex: number) => void
   changeTextProcess: (idProcess: string, text: string, field: FieldType) => void
 }
 export interface IProcessItem {
@@ -69,6 +70,13 @@ export const processStore = create<IProcessStore>()(
         }),
       moveDownProcess: (pos: number) => set(moveProcess(pos, idTechCard, 'down')),
       moveUpProcess: (pos: number) => set(moveProcess(pos, idTechCard, 'up')),
+      reorderProcess: (fromIndex: number, toIndex: number) =>
+        set((state) => {
+          const items = state.processItems[idTechCard]
+          if (!items || fromIndex === toIndex) return
+          const [removed] = items.splice(fromIndex, 1)
+          items.splice(toIndex, 0, removed)
+        }),
       changeTextProcess: (id: string, text: string, field: FieldType) =>
         set((state) => {
           const index = state.processItems[idTechCard].findIndex((item) => item.id === id)

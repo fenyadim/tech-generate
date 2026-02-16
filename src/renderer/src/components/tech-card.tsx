@@ -1,7 +1,21 @@
 import { cn } from '@/shared/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui'
-import { useProcessItem } from '@/store'
+import { useProcessActions, useProcessItem } from '@/store'
 import { useFileAuthor } from '@/store/fileStore'
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import { memo, useCallback } from 'react'
 import { CopyButton } from './copy-button'
 import { CountElement } from './count-element'
@@ -20,6 +34,25 @@ interface TechCardProps {
 const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
   const process = useProcessItem(id)
   const author = useFileAuthor()
+  const { reorderProcess } = useProcessActions(id)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
+      const oldIndex = process?.findIndex((item) => item.id === active.id)
+      const newIndex = process?.findIndex((item) => item.id === over.id)
+      if (oldIndex !== undefined && oldIndex !== -1 && newIndex !== undefined && newIndex !== -1) {
+        reorderProcess(oldIndex, newIndex)
+      }
+    },
+    [process, reorderProcess]
+  )
 
   const sumNormTime = useCallback(
     () =>
@@ -49,28 +82,34 @@ const TechCardMemo = ({ id, count = 1, isVisibleForPrint }: TechCardProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 print:p-2" data-testid="process-container">
-        <div className="grid grid-cols-[0.3fr_3fr_1fr_1fr_70px] gap-1 justify-items-center px-2 *:font-medium text-sm print:grid-cols-[0.3fr_2fr_1fr_1fr]">
+        <div className="grid grid-cols-[1fr_3fr_1fr_1fr_40px] gap-1 justify-items-center px-2 *:font-medium text-sm print:grid-cols-[0.3fr_2fr_1fr_1fr]">
           <p>№</p>
           <p>Процесс</p>
           <p>Норма</p>
           <p>Разряд</p>
         </div>
-        {process &&
-          process.map(({ id: processId, title, category, description, time }, index) => {
-            return (
-              <ProcessItem
-                key={processId}
-                id={processId}
-                idParent={id}
-                pos={index + 1}
-                length={process[id]?.length}
-                title={title}
-                time={time}
-                description={description}
-                category={category}
-              />
-            )
-          })}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={process?.map((item) => item.id) ?? []}
+            strategy={verticalListSortingStrategy}
+          >
+            {process &&
+              process.map(({ id: processId, title, category, description, time }, index) => {
+                return (
+                  <ProcessItem
+                    key={processId}
+                    id={processId}
+                    idParent={id}
+                    pos={index + 1}
+                    title={title}
+                    time={time}
+                    description={description}
+                    category={category}
+                  />
+                )
+              })}
+          </SortableContext>
+        </DndContext>
         <AddProcess idParent={id} />
         <p className="font-medium" data-testid="total-sum">
           Общее время: {sum}
